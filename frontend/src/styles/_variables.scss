@@ -1,0 +1,47 @@
+// =====================================================================
+// Charte graphique - Région Auvergne-Rhône-Alpes / Trouve ton artisan
+// Issue du brief : palette imposée + police « Graphik ».
+// =====================================================================
+
+// Palette de couleurs (brief : 4.4 Palette de couleurs)
+$ttarra-light:        #f1f8fc; // arrière-plans clairs
+$ttarra-primary:      #0074c7; // bleu principal (boutons, liens)
+$ttarra-primary-dark: #00497c; // accents / hover
+$ttarra-dark:         #384050; // textes principaux
+$ttarra-danger:       #cd2c2e; // alertes / erreurs
+$ttarra-success:      #82b864; // confirmations
+
+// Couleurs sémantiques Bootstrap : override AVANT l'import de Bootstrap
+$primary:   $ttarra-primary;
+$secondary: $ttarra-dark;
+$success:   $ttarra-success;
+$danger:    $ttarra-danger;
+$light:     $ttarra-light;
+$dark:      $ttarra-dark;
+
+// Tipographie
+$font-family-sans-serif: 'Graphik', 'Helvetica Neue', Arial, sans-serif;
+$font-family-base: $font-family-sans-serif;
+$headings-font-weight: 700;
+$body-color: $ttarra-dark;
+$body-bg: #ffffff;
+
+// Liens
+$link-color: $ttarra-primary;
+$link-hover-color: $ttarra-primary-dark;
+
+// Focus accessibilité (WCAG 2.1 : contraste suffisant)
+$focus-ring-width: 3px;
+$focus-ring-color: rgba($ttarra-primary, 0.55);
+$focus-ring-opacity: 1;
+
+// Mise en page
+$navbar-padding-y: 0.75rem;
+$grid-gutter-width: 1.5rem;
+$container-max-widths: (
+    sm: 540px,
+    md: 720px,
+    lg: 960px,
+    xl: 1140px,
+    xxl: 1320px,
+);
