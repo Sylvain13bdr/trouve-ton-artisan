@@ -457,14 +457,8 @@ const mockupSection = [
     ),
     p('Police : Graphik (fallback Helvetica Neue / Arial).', { run: { italics: true } }),
     p(
-        'Note importante : Graphik est une police propriétaire (éditeur Commercial Type) ' +
-            'fournie sous licence commerciale payante. Pour les maquettes Figma comme pour le ' +
-            'rendu actuel du site, c\'est donc Inter (Google Fonts, open-source) qui a été ' +
-            'utilisée comme substitut visuel — police géométrique sans-serif très proche de ' +
-            'Graphik. Le CSS du site spécifie cependant `font-family: \'Graphik\', \'Helvetica Neue\', ' +
-            'Arial, sans-serif`, ce qui permettra à la région de déployer Graphik sans modifier ' +
-            'le code dès qu\'elle aura acquis la licence et fourni les fichiers de police.',
-        { run: { italics: true } }
+        'Graphik étant une police payante, Inter a été utilisée pour les maquettes Figma. ' +
+            'Le CSS du site bascule automatiquement sur Graphik dès que les fichiers de police seront fournis.'
     ),
 
     h2('2.2 Lien Figma'),
@@ -487,11 +481,7 @@ const mockupSection = [
 
     h3('2.3.4 Fiche artisan + formulaire'),
     p(
-        'La fiche d\'Orville Salmons (Chauffagiste à Évian) est présentée ici comme ' +
-            'exemple-type. La structure visuelle est strictement la même pour les 17 artisans ' +
-            'de la base : seules les données (nom, ville, note, photo, à propos, site web…) ' +
-            'changent, alimentées dynamiquement par l\'API à partir de la table `artisans`.',
-        { run: { italics: true } }
+        'La fiche d\'Orville Salmons sert d\'exemple. La même structure est utilisée pour les 17 artisans, seules les données changent.'
     ),
     ...threeRes('fiche', 'Fiche artisan'),
 
