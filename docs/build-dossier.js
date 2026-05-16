@@ -378,8 +378,7 @@ const mockupSection = [
     pWithLink(
         'Maquettes complètes (consultation publique) : ',
         'Ouvrir le fichier Figma',
-        'https://www.figma.com/file/XXXX/trouve-ton-artisan',
-        '  — (lien à compléter après publication)'
+        'https://www.figma.com/design/vch2TgFsEjaY9O7gjnNakX/Trouve-ton-Artisan'
     ),
 
     h2('2.3 Captures d’écran'),
@@ -676,37 +675,35 @@ const linksSection = [
     pWithLink(
         'Le dépôt est public et contient l’intégralité du code, les scripts SQL et le README.md : ',
         'https://github.com/Sylvain13bdr/trouve-ton-artisan',
-        'https://github.com/Sylvain13bdr/trouve-ton-artisan',
-        '  — (URL à confirmer après création du dépôt)'
+        'https://github.com/Sylvain13bdr/trouve-ton-artisan'
     ),
     p('Contenu du dépôt :'),
     bullet('backend/ — API Express + Sequelize.'),
     bullet('frontend/ — Application React + Bootstrap + Sass.'),
-    bullet('database/01_schema.sql — Création de la base de données.'),
+    bullet('database/01_schema.sql — Création de la base de données (version XAMPP locale).'),
     bullet('database/02_seed.sql — Alimentation (17 artisans).'),
+    bullet('database/remote/ — Variantes des scripts SQL pour hébergement distant (AlwaysData).'),
     bullet('docs/ — Documentation technique (sécurité, veille, BDD, maquettes).'),
     bullet('README.md — Prérequis, installation, lancement.'),
 
     h2('6.2 Site déployé'),
     pWithLink(
         'Frontend (Vercel) : ',
-        'https://trouve-ton-artisan.vercel.app/',
-        'https://trouve-ton-artisan.vercel.app/',
-        '  — (URL à confirmer après déploiement)'
+        'https://trouve-ton-artisan-rosy.vercel.app/',
+        'https://trouve-ton-artisan-rosy.vercel.app/'
     ),
     pWithLink(
         'API (Render) : ',
-        'https://trouve-ton-artisan-api.onrender.com/api/health',
-        'https://trouve-ton-artisan-api.onrender.com/api/health',
-        '  — (URL à confirmer après déploiement)'
+        'https://trouve-ton-artisan-api-oqmj.onrender.com/api/health',
+        'https://trouve-ton-artisan-api-oqmj.onrender.com/api/health'
     ),
+    p('Base de données MySQL/MariaDB hébergée sur AlwaysData (hôte mysql-sylvain13bdr.alwaysdata.net), connexion SSL obligatoire.'),
 
     h2('6.3 Maquettes Figma'),
     pWithLink(
         'Fichier de maquettes (lecture publique) : ',
-        'https://www.figma.com/file/XXXX/trouve-ton-artisan',
-        'https://www.figma.com/file/XXXX/trouve-ton-artisan',
-        '  — (URL à confirmer après publication)'
+        'https://www.figma.com/design/vch2TgFsEjaY9O7gjnNakX/Trouve-ton-Artisan',
+        'https://www.figma.com/design/vch2TgFsEjaY9O7gjnNakX/Trouve-ton-Artisan'
     ),
 ];
 

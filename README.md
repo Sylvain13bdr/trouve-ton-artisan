@@ -77,7 +77,7 @@ trouve-ton-artisan/
 
 ```bash
 # 1. Cloner le dépôt
-git clone https://github.com/<votre-user>/trouve-ton-artisan.git
+git clone https://github.com/Sylvain13bdr/trouve-ton-artisan.git
 cd trouve-ton-artisan
 
 # 2. Créer la base et l'alimenter (Linux/macOS/Git Bash)
@@ -197,9 +197,10 @@ Détails complets dans [`docs/SECURITE.md`](docs/SECURITE.md).
 ## Liens utiles
 
 - **Brief de la mission** : `Brief de la mission.pdf` (CEF).
-- **Maquettes Figma** : <https://www.figma.com/file/XXXX/trouve-ton-artisan> (à compléter).
-- **Site en ligne** : <https://trouve-ton-artisan.vercel.app/> (à compléter après déploiement).
-- **API en ligne** : <https://trouve-ton-artisan-api.onrender.com/api/health> (à compléter).
+- **Dépôt GitHub** : <https://github.com/Sylvain13bdr/trouve-ton-artisan>
+- **Site en ligne** : <https://trouve-ton-artisan-rosy.vercel.app/>
+- **API en ligne** : <https://trouve-ton-artisan-api-oqmj.onrender.com/api/health>
+- **Maquettes Figma** : <https://www.figma.com/design/vch2TgFsEjaY9O7gjnNakX/Trouve-ton-Artisan>
 
 ---
 
