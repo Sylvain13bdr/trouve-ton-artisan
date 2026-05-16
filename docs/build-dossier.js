@@ -486,6 +486,13 @@ const mockupSection = [
     ...threeRes('liste', 'Liste — catégorie Bâtiment'),
 
     h3('2.3.4 Fiche artisan + formulaire'),
+    p(
+        'La fiche d\'Orville Salmons (Chauffagiste à Évian) est présentée ici comme ' +
+            'exemple-type. La structure visuelle est strictement la même pour les 17 artisans ' +
+            'de la base : seules les données (nom, ville, note, photo, à propos, site web…) ' +
+            'changent, alimentées dynamiquement par l\'API à partir de la table `artisans`.',
+        { run: { italics: true } }
+    ),
     ...threeRes('fiche', 'Fiche artisan'),
 
     h3('2.3.5 Page 404'),
