@@ -37,7 +37,90 @@ const {
     PageBreak,
     PageNumber,
     VerticalAlign,
+    ImageRun,
 } = require('docx');
+
+// Dimensions réelles des screenshots Figma (en pixels)
+const FIGMA_DIMS = {
+    'charte-graphique.png':  { w: 1280, h: 900 },
+    'accueil-desktop.png':   { w: 1280, h: 1400 },
+    'accueil-tablette.png':  { w: 768,  h: 1730 },
+    'accueil-mobile.png':    { w: 375,  h: 1960 },
+    'liste-desktop.png':     { w: 1280, h: 1086 },
+    'liste-tablette.png':    { w: 768,  h: 1054 },
+    'liste-mobile.png':      { w: 375,  h: 1677 },
+    'fiche-desktop.png':     { w: 1280, h: 1042 },
+    'fiche-tablette.png':    { w: 768,  h: 1276 },
+    'fiche-mobile.png':      { w: 375,  h: 1256 },
+    '404-desktop.png':       { w: 1280, h: 672 },
+    '404-mobile.png':        { w: 375,  h: 542 },
+};
+
+/**
+ * Insère une capture PNG redimensionnée pour tenir dans la page A4.
+ * @param {string} filename — nom du fichier PNG dans `captures/`
+ * @param {object} [opts]
+ * @param {number} [opts.maxW=500] — largeur max en pixels
+ * @param {number} [opts.maxH=600] — hauteur max en pixels
+ * @param {string} [opts.caption] — texte sous l'image
+ */
+function image(filename, opts = {}) {
+    const filePath = path.join(__dirname, 'captures', filename);
+    const dims = FIGMA_DIMS[filename] || { w: 1280, h: 800 };
+    const maxW = opts.maxW || 500;
+    const maxH = opts.maxH || 600;
+    const ratioW = maxW / dims.w;
+    const ratioH = maxH / dims.h;
+    const ratio = Math.min(ratioW, ratioH, 1);
+    const width = Math.round(dims.w * ratio);
+    const height = Math.round(dims.h * ratio);
+
+    const paragraphs = [
+        new Paragraph({
+            alignment: AlignmentType.CENTER,
+            spacing: { before: 100, after: 60 },
+            children: [
+                new ImageRun({
+                    type: 'png',
+                    data: fs.readFileSync(filePath),
+                    transformation: { width, height },
+                    altText: {
+                        title: opts.caption || filename,
+                        description: opts.caption || filename,
+                        name: filename,
+                    },
+                }),
+            ],
+        }),
+    ];
+
+    if (opts.caption) {
+        paragraphs.push(
+            new Paragraph({
+                alignment: AlignmentType.CENTER,
+                spacing: { after: 180 },
+                children: [
+                    new TextRun({
+                        text: opts.caption,
+                        italics: true,
+                        size: 18,
+                        color: COLOR_DARK,
+                    }),
+                ],
+            })
+        );
+    }
+    return paragraphs;
+}
+
+// Bloc 3 résolutions empilées pour une page donnée
+function threeRes(baseSlug, label) {
+    return [
+        ...image(`${baseSlug}-mobile.png`,   { maxW: 200, caption: `${label} — Mobile (375 px)` }),
+        ...image(`${baseSlug}-tablette.png`, { maxW: 360, caption: `${label} — Tablette (768 px)` }),
+        ...image(`${baseSlug}-desktop.png`,  { maxW: 540, caption: `${label} — Desktop (1280 px)` }),
+    ];
+}
 
 // -------- Helpers ---------------------------------------------------------
 
@@ -394,23 +477,20 @@ const mockupSection = [
     h2('2.3 Captures d’écran'),
 
     h3('2.3.1 Charte graphique'),
-    placeholder('Charte graphique — logo, favicon, palette, typographie'),
+    ...image('charte-graphique.png', { maxW: 540, caption: 'Charte graphique — logo, favicon, palette, typographie' }),
 
     h3('2.3.2 Accueil'),
-    placeholder('Accueil — mobile 375 px'),
-    new Paragraph({ spacing: { after: 120 }, children: [new TextRun('')] }),
-    placeholder('Accueil — tablette 768 px'),
-    new Paragraph({ spacing: { after: 120 }, children: [new TextRun('')] }),
-    placeholder('Accueil — ordinateur 1280 px'),
+    ...threeRes('accueil', 'Accueil'),
 
     h3('2.3.3 Liste des artisans'),
-    placeholder('Liste — mobile / tablette / desktop'),
+    ...threeRes('liste', 'Liste — catégorie Bâtiment'),
 
     h3('2.3.4 Fiche artisan + formulaire'),
-    placeholder('Fiche artisan — mobile / tablette / desktop'),
+    ...threeRes('fiche', 'Fiche artisan'),
 
     h3('2.3.5 Page 404'),
-    placeholder('Page 404 — mobile / desktop'),
+    ...image('404-mobile.png',  { maxW: 200, caption: '404 — Mobile (375 px)' }),
+    ...image('404-desktop.png', { maxW: 540, caption: '404 — Desktop (1280 px)' }),
 
     h2('2.4 Enchaînement des écrans'),
     code(`[Accueil] ─ menu catégorie ────► [Liste filtrée]
