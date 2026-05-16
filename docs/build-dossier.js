@@ -373,6 +373,16 @@ const mockupSection = [
         [2200, 2200, 2400, 2560]
     ),
     p('Police : Graphik (fallback Helvetica Neue / Arial).', { run: { italics: true } }),
+    p(
+        'Note importante : Graphik est une police propriétaire (éditeur Commercial Type) ' +
+            'fournie sous licence commerciale payante. Pour les maquettes Figma comme pour le ' +
+            'rendu actuel du site, c\'est donc Inter (Google Fonts, open-source) qui a été ' +
+            'utilisée comme substitut visuel — police géométrique sans-serif très proche de ' +
+            'Graphik. Le CSS du site spécifie cependant `font-family: \'Graphik\', \'Helvetica Neue\', ' +
+            'Arial, sans-serif`, ce qui permettra à la région de déployer Graphik sans modifier ' +
+            'le code dès qu\'elle aura acquis la licence et fourni les fichiers de police.',
+        { run: { italics: true } }
+    ),
 
     h2('2.2 Lien Figma'),
     pWithLink(
@@ -383,20 +393,23 @@ const mockupSection = [
 
     h2('2.3 Captures d’écran'),
 
-    h3('2.3.1 Accueil'),
+    h3('2.3.1 Charte graphique'),
+    placeholder('Charte graphique — logo, favicon, palette, typographie'),
+
+    h3('2.3.2 Accueil'),
     placeholder('Accueil — mobile 375 px'),
     new Paragraph({ spacing: { after: 120 }, children: [new TextRun('')] }),
     placeholder('Accueil — tablette 768 px'),
     new Paragraph({ spacing: { after: 120 }, children: [new TextRun('')] }),
     placeholder('Accueil — ordinateur 1280 px'),
 
-    h3('2.3.2 Liste des artisans'),
+    h3('2.3.3 Liste des artisans'),
     placeholder('Liste — mobile / tablette / desktop'),
 
-    h3('2.3.3 Fiche artisan + formulaire'),
+    h3('2.3.4 Fiche artisan + formulaire'),
     placeholder('Fiche artisan — mobile / tablette / desktop'),
 
-    h3('2.3.4 Page 404'),
+    h3('2.3.5 Page 404'),
     placeholder('Page 404 — mobile / desktop'),
 
     h2('2.4 Enchaînement des écrans'),
