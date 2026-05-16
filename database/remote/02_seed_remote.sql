@@ -4,11 +4,17 @@
 -- =====================================================================
 
 -- Nettoyage (relance idempotente)
+-- MariaDB ignore FOREIGN_KEY_CHECKS pour TRUNCATE : on utilise DELETE FROM
+-- + ALTER ... AUTO_INCREMENT = 1 pour réinitialiser les compteurs.
 SET FOREIGN_KEY_CHECKS = 0;
-TRUNCATE TABLE contact_messages;
-TRUNCATE TABLE artisans;
-TRUNCATE TABLE specialties;
-TRUNCATE TABLE categories;
+DELETE FROM contact_messages;
+DELETE FROM artisans;
+DELETE FROM specialties;
+DELETE FROM categories;
+ALTER TABLE contact_messages AUTO_INCREMENT = 1;
+ALTER TABLE artisans         AUTO_INCREMENT = 1;
+ALTER TABLE specialties      AUTO_INCREMENT = 1;
+ALTER TABLE categories       AUTO_INCREMENT = 1;
 SET FOREIGN_KEY_CHECKS = 1;
 
 -- 1. Catégories (ordre = ordre du menu)
