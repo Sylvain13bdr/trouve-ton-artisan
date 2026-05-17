@@ -4,18 +4,19 @@
  *
  * Exécution : `npm run db:test`
  */
-const { sequelize, Category, Specialty, Artisan } = require('../models');
+const { sequelize, Category, Specialty, City, Artisan } = require('../models');
 
 (async () => {
     try {
         await sequelize.authenticate();
-        const [categories, specialties, artisans] = await Promise.all([
+        const [categories, specialties, cities, artisans] = await Promise.all([
             Category.count(),
             Specialty.count(),
+            City.count(),
             Artisan.count(),
         ]);
         // eslint-disable-next-line no-console
-        console.log({ categories, specialties, artisans });
+        console.log({ categories, specialties, cities, artisans });
         process.exit(0);
     } catch (err) {
         // eslint-disable-next-line no-console

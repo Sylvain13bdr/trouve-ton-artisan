@@ -29,10 +29,10 @@ const Artisan = sequelize.define(
                 return value === null ? null : parseFloat(value);
             },
         },
-        city: {
-            type: DataTypes.STRING(120),
+        cityId: {
+            type: DataTypes.INTEGER.UNSIGNED,
             allowNull: false,
-            validate: { notEmpty: true },
+            field: 'city_id',
         },
         about: {
             type: DataTypes.TEXT,
