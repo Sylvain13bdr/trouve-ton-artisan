@@ -509,55 +509,50 @@ const dbSection = [
     h1('3. Base de données'),
 
     h2('3.1 Règles de gestion'),
-    bullet('Un artisan apparaît dans une seule spécialité.'),
+    bullet('Un artisan appartient à une seule spécialité.'),
     bullet('Une spécialité est rattachée à une seule catégorie.'),
+    bullet('Un artisan est localisé dans une seule ville ; une ville regroupe potentiellement plusieurs artisans.'),
     bullet('Un artisan peut être marqué « artisan du mois ».'),
     bullet('Chaque artisan possède une note décimale entre 0 et 5.'),
     bullet('Un message de contact est associé à un seul artisan ; un artisan peut en recevoir plusieurs.'),
 
-    h2('3.2 Modèle conceptuel de données (MCD)'),
-    code(`+-----------+ 1,n         1,1 +-------------+ 1,n      1,1 +-----------+
-| CATEGORIE |-----< rattachée >-----| SPECIALITE  |----< pratiquée >----|  ARTISAN  |
-+-----------+                       +-------------+                       +-----------+
-| id        |                       | id          |                       | id        |
-| nom       |                       | nom         |                       | nom       |
-+-----------+                       +-------------+                       | note      |
-                                                                          | ville     |
-                                                                          | email     |
-                                                                          | a_propos  |
-                                                                          | site_web  |
-                                                                          | top_mois  |
-                                                                          +-----------+
-                                                                                  | 1,n
-                                                                                  |
-                                                                          < destinataire >
-                                                                                  |
-                                                                                  | 1,1
-                                                                          +-----------------+
-                                                                          | MESSAGE_CONTACT |
-                                                                          +-----------------+
-                                                                          | id              |
-                                                                          | expediteur_nom  |
-                                                                          | expediteur_email|
-                                                                          | objet           |
-                                                                          | message         |
-                                                                          | date_envoi      |
-                                                                          +-----------------+`),
+    h2('3.2 Respect des formes normales'),
+    p(
+        'Le schéma respecte les trois premières formes normales (1FN, 2FN, 3FN). En particulier, ' +
+            'la ville a été externalisée dans une table dédiée (cities) pour éviter la redondance du ' +
+            'nom de ville sur chaque ligne d\'artisan (3FN) : si une ville change de nom, une seule ' +
+            'ligne est à modifier. Idem pour les catégories et les spécialités, qui sont des tables ' +
+            'référentielles distinctes.'
+    ),
 
-    h2('3.3 Modèle logique de données (MLD)'),
-    code(`categories       (id, nom)
-specialties      (id, nom, #category_id)
-artisans         (id, nom, note, ville, a_propos, email, site_web, image_url,
-                  top_du_mois, #specialty_id)
-contact_messages (id, expediteur_nom, expediteur_email, objet, message,
-                  date_envoi, #artisan_id)`),
+    h2('3.3 Modèle conceptuel de données (MCD)'),
+    ...image('mcd.png', { maxW: 480, maxH: 720, caption: 'MCD — 5 entités, cardinalités explicites' }),
 
-    h2('3.4 Modèle physique de données (extrait)'),
-    code(`CREATE TABLE artisans (
+    h2('3.4 Modèle logique de données (MLD)'),
+    ...image('mld.png', { maxW: 540, maxH: 720, caption: 'MLD — types SQL, PK / UK / FK identifiés' }),
+    p('Notation textuelle équivalente (avec PK soulignée et FK préfixées par #) :'),
+    code(`categories       (id, name)
+specialties      (id, name, #category_id)
+cities           (id, name)
+artisans         (id, name, rating, about, email, website, image_url,
+                  is_top_of_month, #specialty_id, #city_id)
+contact_messages (id, sender_name, sender_email, subject, message,
+                  created_at, #artisan_id)`),
+
+    h2('3.5 Modèle physique de données (extrait)'),
+    code(`CREATE TABLE cities (
+  id          INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  name        VARCHAR(120) NOT NULL UNIQUE,
+  created_at  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+                       ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE artisans (
   id              INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   name            VARCHAR(120) NOT NULL,
   rating          DECIMAL(2,1) NOT NULL DEFAULT 0.0,
-  city            VARCHAR(120) NOT NULL,
+  city_id         INT UNSIGNED NOT NULL,
   about           TEXT,
   email           VARCHAR(180) NOT NULL,
   website         VARCHAR(255),
@@ -570,17 +565,22 @@ contact_messages (id, expediteur_nom, expediteur_email, objet, message,
   CONSTRAINT chk_rating CHECK (rating BETWEEN 0 AND 5),
   CONSTRAINT fk_artisan_specialty
     FOREIGN KEY (specialty_id) REFERENCES specialties(id)
+    ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT fk_artisan_city
+    FOREIGN KEY (city_id) REFERENCES cities(id)
     ON DELETE RESTRICT ON UPDATE CASCADE
 ) ENGINE=InnoDB CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;`),
     p(
-        'Les scripts complets sont disponibles dans le dépôt GitHub : ' +
-            'database/01_schema.sql (création) et database/02_seed.sql (jeu d’essai).'
+        'Les scripts SQL complets se trouvent dans database/01_schema.sql (création) et ' +
+            'database/02_seed.sql (jeu d\'essai). Une variante adaptée à un hébergement préfixé ' +
+            '(AlwaysData) est disponible dans database/remote/.'
     ),
 
-    h2('3.5 Jeu d’essai'),
-    p('Le jeu d’essai reprend intégralement le contenu du fichier data.xlsx fourni :'),
+    h2('3.6 Jeu d\'essai'),
+    p('Issu du fichier data.xlsx fourni avec le brief :'),
     bullet('4 catégories : Bâtiment, Services, Fabrication, Alimentation.'),
     bullet('15 spécialités réparties dans les 4 catégories.'),
+    bullet('14 villes uniques (Lyon revient 3 fois, Valence 2 fois, les autres 1 fois).'),
     bullet('17 artisans dont 3 mis en avant comme « artisans du mois ».'),
 
     new Paragraph({ children: [new PageBreak()] }),

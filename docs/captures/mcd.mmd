@@ -1,0 +1,40 @@
+erDiagram
+    CATEGORIE ||--o{ SPECIALITE : "regroupe (1,n / 1,1)"
+    SPECIALITE ||--o{ ARTISAN : "pratiquée par (1,n / 1,1)"
+    VILLE ||--o{ ARTISAN : "localise (1,n / 1,1)"
+    ARTISAN ||--o{ MESSAGE_CONTACT : "destinataire de (0,n / 1,1)"
+
+    CATEGORIE {
+        int id PK
+        string nom
+    }
+    SPECIALITE {
+        int id PK
+        string nom
+        int categorie_id FK
+    }
+    VILLE {
+        int id PK
+        string nom
+    }
+    ARTISAN {
+        int id PK
+        string nom
+        decimal note
+        text a_propos
+        string email
+        string site_web
+        string image_url
+        bool top_du_mois
+        int specialite_id FK
+        int ville_id FK
+    }
+    MESSAGE_CONTACT {
+        int id PK
+        int artisan_id FK
+        string expediteur_nom
+        string expediteur_email
+        string objet
+        text message
+        datetime date_envoi
+    }

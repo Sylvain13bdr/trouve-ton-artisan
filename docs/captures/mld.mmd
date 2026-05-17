@@ -1,0 +1,48 @@
+erDiagram
+    categories ||--o{ specialties : "1,n"
+    specialties ||--o{ artisans : "1,n"
+    cities ||--o{ artisans : "1,n"
+    artisans ||--o{ contact_messages : "0,n"
+
+    categories {
+        INT_UNSIGNED id PK "AUTO_INCREMENT"
+        VARCHAR_50 name UK "NOT NULL"
+        DATETIME created_at "DEFAULT CURRENT_TIMESTAMP"
+        DATETIME updated_at "ON UPDATE CURRENT_TIMESTAMP"
+    }
+    specialties {
+        INT_UNSIGNED id PK "AUTO_INCREMENT"
+        VARCHAR_80 name UK "NOT NULL"
+        INT_UNSIGNED category_id FK "NOT NULL"
+        DATETIME created_at
+        DATETIME updated_at
+    }
+    cities {
+        INT_UNSIGNED id PK "AUTO_INCREMENT"
+        VARCHAR_120 name UK "NOT NULL"
+        DATETIME created_at
+        DATETIME updated_at
+    }
+    artisans {
+        INT_UNSIGNED id PK "AUTO_INCREMENT"
+        VARCHAR_120 name "NOT NULL"
+        DECIMAL_2_1 rating "DEFAULT 0.0, CHECK 0-5"
+        INT_UNSIGNED city_id FK "NOT NULL"
+        TEXT about "NULL"
+        VARCHAR_180 email "NOT NULL, CHECK email"
+        VARCHAR_255 website "NULL"
+        VARCHAR_255 image_url "NULL"
+        INT_UNSIGNED specialty_id FK "NOT NULL"
+        BOOLEAN is_top_of_month "DEFAULT FALSE"
+        DATETIME created_at
+        DATETIME updated_at
+    }
+    contact_messages {
+        INT_UNSIGNED id PK "AUTO_INCREMENT"
+        INT_UNSIGNED artisan_id FK "NOT NULL, CASCADE"
+        VARCHAR_120 sender_name "NOT NULL"
+        VARCHAR_180 sender_email "NOT NULL"
+        VARCHAR_180 subject "NOT NULL"
+        TEXT message "NOT NULL"
+        DATETIME created_at
+    }
