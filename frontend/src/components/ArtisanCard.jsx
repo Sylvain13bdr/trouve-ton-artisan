@@ -9,13 +9,14 @@ import { categorySlug, initials } from '../utils/avatar.js';
 export default function ArtisanCard({ artisan }) {
     const specialty = artisan.specialty?.name || '';
     const category = artisan.specialty?.category?.name || '';
+    const cityName = artisan.city?.name || '';
     const slug = categorySlug(category);
 
     return (
         <Link
             to={`/artisans/${artisan.id}`}
             className="artisan-card"
-            aria-label={`Voir la fiche de ${artisan.name}, ${specialty} à ${artisan.city}`}
+            aria-label={`Voir la fiche de ${artisan.name}, ${specialty} à ${cityName}`}
         >
             <div
                 className={`artisan-card__image artisan-card__image--${slug}`}
@@ -36,7 +37,7 @@ export default function ArtisanCard({ artisan }) {
                 </p>
                 <p className="artisan-card__city mb-0">
                     <i className="bi bi-geo-alt me-1" aria-hidden="true" />
-                    {artisan.city}
+                    {cityName}
                 </p>
             </div>
         </Link>

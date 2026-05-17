@@ -108,12 +108,13 @@ export default function ArtisanDetailPage() {
 
     const specialty = artisan.specialty?.name || '';
     const category = artisan.specialty?.category?.name || '';
+    const cityName = artisan.city?.name || '';
 
     return (
         <>
             <Seo
                 title={artisan.name}
-                description={`${artisan.name}, ${specialty} à ${artisan.city}. Contactez cet artisan via Trouve ton artisan.`}
+                description={`${artisan.name}, ${specialty} à ${cityName}. Contactez cet artisan via Trouve ton artisan.`}
             />
 
             <section className="container py-5 artisan-detail">
@@ -154,7 +155,7 @@ export default function ArtisanDetailPage() {
                         <p className="artisan-detail__meta mt-3">
                             <span><strong>Spécialité :</strong> {specialty}</span>
                             <span><strong>Catégorie :</strong> {category}</span>
-                            <span><strong>Ville :</strong> {artisan.city}</span>
+                            <span><strong>Ville :</strong> {cityName}</span>
                         </p>
 
                         <h2 className="h4 mt-4">À propos</h2>
