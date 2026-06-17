@@ -19,8 +19,10 @@ $danger:    $ttarra-danger;
 $light:     $ttarra-light;
 $dark:      $ttarra-dark;
 
-// Tipographie
-$font-family-sans-serif: 'Graphik', 'Helvetica Neue', Arial, sans-serif;
+// Typographie : « Graphik » (charte régionale) si la police est installée
+// localement, sinon repli sur Inter / polices système. Aucun fichier de police
+// distant n'est chargé (pas de 404, démarche d'éco-conception).
+$font-family-sans-serif: 'Graphik', 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 $font-family-base: $font-family-sans-serif;
 $headings-font-weight: 700;
 $body-color: $ttarra-dark;

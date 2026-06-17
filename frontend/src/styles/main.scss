@@ -7,22 +7,9 @@
 @import 'variables';
 @import 'bootstrap/scss/bootstrap';
 
-// Police Graphik (téléchargée et déposée dans /public/fonts/)
-// La région fournit Graphik ; on retombe sur Helvetica/Arial si absente.
-@font-face {
-    font-family: 'Graphik';
-    src: local('Graphik'), url('/fonts/Graphik-Regular.woff2') format('woff2');
-    font-weight: 400;
-    font-style: normal;
-    font-display: swap;
-}
-@font-face {
-    font-family: 'Graphik';
-    src: local('Graphik'), url('/fonts/Graphik-Bold.woff2') format('woff2');
-    font-weight: 700;
-    font-style: normal;
-    font-display: swap;
-}
+// Note : la police « Graphik » de la charte régionale n'est pas redistribuable.
+// Elle est donc utilisée uniquement si présente sur le poste (cf. _variables.scss),
+// sans @font-face distant — ce qui évite des requêtes 404 inutiles en console.
 
 // ---------- Accessibilité globale ----------------------------------------
 :focus-visible {

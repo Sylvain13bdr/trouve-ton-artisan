@@ -1,12 +1,17 @@
 /**
  * Carte (fiche résumée) d'un artisan pour les listes et la page d'accueil.
  * Toute la carte est cliquable (Link) tout en restant accessible au clavier.
+ *
+ * `headingLevel` permet d'adapter le niveau de titre du nom de l'artisan au
+ * contexte (h2 sous un h1 de page, h3 sous une section h2), afin de respecter
+ * la hiérarchie des titres (accessibilité / W3C).
  */
 import { Link } from 'react-router-dom';
 import Rating from './Rating.jsx';
 import { categorySlug, initials } from '../utils/avatar.js';
 
-export default function ArtisanCard({ artisan }) {
+export default function ArtisanCard({ artisan, headingLevel = 'h3' }) {
+    const Heading = headingLevel;
     const specialty = artisan.specialty?.name || '';
     const category = artisan.specialty?.category?.name || '';
     const cityName = artisan.city?.name || '';
@@ -29,7 +34,7 @@ export default function ArtisanCard({ artisan }) {
                 )}
             </div>
             <div className="artisan-card__body">
-                <h3 className="artisan-card__name h6 mb-1">{artisan.name}</h3>
+                <Heading className="artisan-card__name h6 mb-1">{artisan.name}</Heading>
                 <Rating value={artisan.rating} />
                 <p className="artisan-card__speciality mb-0">
                     {specialty}
