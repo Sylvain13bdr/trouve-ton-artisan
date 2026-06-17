@@ -1,0 +1,6 @@
+{
+    "spec": "tests/**/*.test.js",
+    "require": "tests/mocha.setup.js",
+    "timeout": 60000,
+    "exit": true
+}

@@ -1,10 +1,11 @@
 /**
- * Tests automatisés de l'API Trouve ton artisan.
+ * Tests automatisés de l'API Trouve ton artisan (Mocha + Chai + Supertest).
  *  - SQL : artisans / catégories (SQLite en mémoire via Sequelize).
  *  - NoSQL : avis clients (MongoDB éphémère via mongodb-memory-server).
  *  - Sécurité : clé d'API, validation des entrées.
  * Exécution isolée : aucune base de données réelle n'est touchée.
  */
+const { expect } = require('chai');
 const { MongoMemoryServer } = require('mongodb-memory-server');
 const request = require('supertest');
 
@@ -17,7 +18,9 @@ let disconnectMongo;
 let mongo;
 let artisanId;
 
-beforeAll(async () => {
+before(async function () {
+    this.timeout(60000);
+
     // 1. MongoDB éphémère
     mongo = await MongoMemoryServer.create();
 
@@ -55,107 +58,100 @@ beforeAll(async () => {
     await connectMongo();
 });
 
-afterAll(async () => {
+after(async function () {
     if (disconnectMongo) await disconnectMongo();
     if (models && models.sequelize) await models.sequelize.close();
     if (mongo) await mongo.stop();
 });
 
-describe('API Artisans (SQL)', () => {
-    test('GET /api/artisans retourne la liste (avec clé API)', async () => {
+describe('API Artisans (SQL)', function () {
+    it('GET /api/artisans retourne la liste (avec clé API)', async function () {
         const res = await request(app).get('/api/artisans').set('x-api-key', API_KEY);
-        expect(res.status).toBe(200);
-        expect(Array.isArray(res.body)).toBe(true);
-        expect(res.body).toHaveLength(1);
-        expect(res.body[0]).toHaveProperty('name', 'Plomberie Dupont');
-        expect(res.body[0].city).toHaveProperty('name', 'Lyon');
+        expect(res.status).to.equal(200);
+        expect(res.body).to.be.an('array').with.lengthOf(1);
+        expect(res.body[0]).to.have.property('name', 'Plomberie Dupont');
+        expect(res.body[0].city).to.have.property('name', 'Lyon');
     });
 
-    test('GET /api/artisans/:id retourne la fiche', async () => {
+    it('GET /api/artisans/:id retourne la fiche', async function () {
         const res = await request(app).get(`/api/artisans/${artisanId}`).set('x-api-key', API_KEY);
-        expect(res.status).toBe(200);
-        expect(res.body).toHaveProperty('id', artisanId);
-        expect(res.body.specialty).toHaveProperty('name', 'Plomberie');
+        expect(res.status).to.equal(200);
+        expect(res.body).to.have.property('id', artisanId);
+        expect(res.body.specialty).to.have.property('name', 'Plomberie');
     });
 
-    test('GET /api/artisans/:id inexistant => 404', async () => {
+    it('GET /api/artisans/:id inexistant => 404', async function () {
         const res = await request(app).get('/api/artisans/99999').set('x-api-key', API_KEY);
-        expect(res.status).toBe(404);
+        expect(res.status).to.equal(404);
     });
 
-    test('GET /api/artisans?q=… sans résultat => 200 + tableau vide', async () => {
-        const res = await request(app)
-            .get('/api/artisans?q=zzz-aucun-resultat')
-            .set('x-api-key', API_KEY);
-        expect(res.status).toBe(200);
-        expect(res.body).toEqual([]);
+    it('GET /api/artisans?q=… sans résultat => 200 + tableau vide', async function () {
+        const res = await request(app).get('/api/artisans?q=zzz-aucun-resultat').set('x-api-key', API_KEY);
+        expect(res.status).to.equal(200);
+        expect(res.body).to.deep.equal([]);
     });
 });
 
-describe('API Avis (NoSQL)', () => {
-    test('GET /api/artisans/:id/reviews est vide au départ', async () => {
-        const res = await request(app)
-            .get(`/api/artisans/${artisanId}/reviews`)
-            .set('x-api-key', API_KEY);
-        expect(res.status).toBe(200);
-        expect(res.body).toEqual({ items: [], count: 0, average: null });
+describe('API Avis (NoSQL)', function () {
+    it('GET /api/artisans/:id/reviews est vide au départ', async function () {
+        const res = await request(app).get(`/api/artisans/${artisanId}/reviews`).set('x-api-key', API_KEY);
+        expect(res.status).to.equal(200);
+        expect(res.body).to.deep.equal({ items: [], count: 0, average: null });
     });
 
-    test('POST un avis valide => 201, puis lecture + moyenne', async () => {
+    it('POST un avis valide => 201, puis lecture + moyenne', async function () {
         const r1 = await request(app)
             .post(`/api/artisans/${artisanId}/reviews`)
             .set('x-api-key', API_KEY)
             .send({ authorName: 'Claire', rating: 5, comment: 'Travail impeccable et très soigné.' });
-        expect(r1.status).toBe(201);
-        expect(r1.body).toHaveProperty('success', true);
+        expect(r1.status).to.equal(201);
+        expect(r1.body).to.have.property('success', true);
 
         const r2 = await request(app)
             .post(`/api/artisans/${artisanId}/reviews`)
             .set('x-api-key', API_KEY)
             .send({ authorName: 'Marc', rating: 3, comment: 'Correct, mais un peu en retard.' });
-        expect(r2.status).toBe(201);
+        expect(r2.status).to.equal(201);
 
-        const list = await request(app)
-            .get(`/api/artisans/${artisanId}/reviews`)
-            .set('x-api-key', API_KEY);
-        expect(list.status).toBe(200);
-        expect(list.body.count).toBe(2);
-        expect(list.body.average).toBe(4); // (5 + 3) / 2
-        expect(list.body.items[0]).toHaveProperty('authorName');
+        const list = await request(app).get(`/api/artisans/${artisanId}/reviews`).set('x-api-key', API_KEY);
+        expect(list.status).to.equal(200);
+        expect(list.body.count).to.equal(2);
+        expect(list.body.average).to.equal(4); // (5 + 3) / 2
+        expect(list.body.items[0]).to.have.property('authorName');
     });
 
-    test('POST un avis sur un artisan inexistant => 404', async () => {
+    it('POST un avis sur un artisan inexistant => 404', async function () {
         const res = await request(app)
             .post('/api/artisans/99999/reviews')
             .set('x-api-key', API_KEY)
             .send({ authorName: 'Test', rating: 4, comment: 'Un commentaire suffisamment long.' });
-        expect(res.status).toBe(404);
+        expect(res.status).to.equal(404);
     });
 });
 
-describe('Sécurité', () => {
-    test('sans clé API => 401', async () => {
+describe('Sécurité', function () {
+    it('sans clé API => 401', async function () {
         const res = await request(app).get('/api/artisans');
-        expect(res.status).toBe(401);
+        expect(res.status).to.equal(401);
     });
 
-    test('mauvaise clé API => 401', async () => {
+    it('mauvaise clé API => 401', async function () {
         const res = await request(app).get('/api/artisans').set('x-api-key', 'mauvaise-cle');
-        expect(res.status).toBe(401);
+        expect(res.status).to.equal(401);
     });
 
-    test('avis invalide (note hors bornes + commentaire trop court) => 400', async () => {
+    it('avis invalide (note hors bornes + commentaire trop court) => 400', async function () {
         const res = await request(app)
             .post(`/api/artisans/${artisanId}/reviews`)
             .set('x-api-key', API_KEY)
             .send({ authorName: 'X', rating: 9, comment: 'court' });
-        expect(res.status).toBe(400);
-        expect(res.body).toHaveProperty('error', 'ValidationError');
+        expect(res.status).to.equal(400);
+        expect(res.body).to.have.property('error', 'ValidationError');
     });
 
-    test('GET /api/health est public => 200', async () => {
+    it('GET /api/health est public => 200', async function () {
         const res = await request(app).get('/api/health');
-        expect(res.status).toBe(200);
-        expect(res.body).toHaveProperty('status', 'ok');
+        expect(res.status).to.equal(200);
+        expect(res.body).to.have.property('status', 'ok');
     });
 });

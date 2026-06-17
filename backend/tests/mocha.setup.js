@@ -1,8 +1,7 @@
 /**
- * Setup Jest exécuté avant la suite de tests.
- * Si un binaire `mongod` est déjà installé sur la machine, on le réutilise
- * pour `mongodb-memory-server` (évite tout téléchargement). Sinon, la
- * librairie télécharge la version requise automatiquement.
+ * Setup Mocha exécuté avant la suite de tests (via .mocharc.json « require »).
+ * Réutilise un binaire mongod local s'il existe (évite tout téléchargement par
+ * mongodb-memory-server). Sinon, la librairie télécharge la version requise.
  */
 const fs = require('fs');
 
