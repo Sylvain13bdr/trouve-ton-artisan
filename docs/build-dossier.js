@@ -450,7 +450,7 @@ const contextSection = [
             'l’une des régions les plus artisanales de France.'
     ),
     p(
-        "Pour entretenir cet engouement, la région souhaite créer une plateforme web mettant " +
+        "Pour valoriser ce tissu artisanal, la région souhaite créer une plateforme web mettant " +
             "directement en relation les particuliers et les artisans locaux. L’interlocuteur du projet " +
             'se trouve dans les bureaux de Lyon.'
     ),
@@ -582,15 +582,20 @@ const mockupSection = [
 
     h2('2.7 Accessibilité et référencement'),
     p(
-        'Le site vise la conformité WCAG 2.1 : balises sémantiques, lien d\'évitement vers le contenu ' +
-            'principal, attributs ARIA sur les éléments interactifs, focus visible et navigation au clavier. ' +
-            'Le composant de notation expose aussi bien les étoiles que la valeur chiffrée, pour les lecteurs ' +
-            'd\'écran.'
+        'Le site vise la conformité WCAG 2.1 et, dans sa déclinaison française, le RGAA (Référentiel ' +
+            'Général d\'Amélioration de l\'Accessibilité), opposable aux organismes publics — ce qui est ' +
+            'directement pertinent ici, le commanditaire étant une collectivité. Concrètement : balises ' +
+            'sémantiques, lien d\'évitement vers le contenu principal, libellés associés à chaque champ de ' +
+            'formulaire, images décoratives neutralisées pour les lecteurs d\'écran (alt vide ou ' +
+            'aria-hidden), ordre de tabulation logique, focus visible et navigation entièrement au clavier. ' +
+            'Le composant de notation expose aussi bien les étoiles que la valeur chiffrée. Les contrastes de ' +
+            'la palette ont été vérifiés par rapport au seuil AA.'
     ),
     p(
-        'Côté référencement, chaque page définit son titre et sa méta-description grâce aux métadonnées ' +
-            'natives de React 19 (composant Seo), ce qui favorise le référencement et le partage sur les ' +
-            'réseaux sociaux. Les URL restent propres et lisibles grâce à React Router.'
+        'Côté référencement, chaque page définit son propre titre et sa méta-description grâce aux ' +
+            'métadonnées natives de React 19 (composant Seo), ce qui améliore l\'indexation par les moteurs ' +
+            'de recherche et l\'aperçu lors d\'un partage sur les réseaux sociaux. Les URL restent propres et ' +
+            'lisibles grâce à React Router.'
     ),
 
     h2('2.8 Éco-conception'),
@@ -598,10 +603,10 @@ const mockupSection = [
         'Quelques principes d\'éco-conception ont été pris en compte. Les images des artisans sont chargées ' +
             'en différé (lazy loading), ce qui évite de télécharger des visuels non affichés à l\'écran. La ' +
             'typographie s\'appuie sur des polices déjà présentes sur le poste, sans téléchargement de ' +
-            'fichier de police distant. Côté serveur, l\'API ne renvoie que les colonnes utiles (pas de ' +
-            'SELECT *) et s\'appuie sur une vue SQL qui pré-assemble les jointures, ce qui réduit le volume ' +
-            'de données transférées. Enfin, le build de production (Vite) minifie et compresse les fichiers ' +
-            'envoyés au navigateur, et les dépendances ont été limitées au nécessaire.'
+            'fichier distant. Côté serveur, l\'API ne renvoie que les colonnes utiles (pas de SELECT *) et ' +
+            's\'appuie sur une vue SQL qui pré-assemble les jointures, ce qui réduit le volume de données ' +
+            'transférées. Le build de production (Vite) minifie et compresse enfin les fichiers envoyés au ' +
+            'navigateur.'
     ),
 
     new Paragraph({ children: [new PageBreak()] }),
@@ -666,7 +671,8 @@ CREATE TABLE artisans (
   created_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
                           ON UPDATE CURRENT_TIMESTAMP,
-  CONSTRAINT chk_rating CHECK (rating BETWEEN 0 AND 5),
+  CONSTRAINT chk_artisan_rating CHECK (rating >= 0.0 AND rating <= 5.0),
+  CONSTRAINT chk_artisan_email  CHECK (email LIKE '%_@_%.__%'),
   CONSTRAINT fk_artisan_specialty
     FOREIGN KEY (specialty_id) REFERENCES specialties(id)
     ON DELETE RESTRICT ON UPDATE CASCADE,
@@ -691,11 +697,11 @@ CREATE TABLE artisans (
     p(
         'En complément de la base relationnelle, les avis déposés par les visiteurs sur la fiche d\'un ' +
             'artisan sont stockés dans une base MongoDB, via l\'ODM Mongoose. Ce choix répond à l\'exigence ' +
-            'du référentiel — manipuler des données à la fois SQL et NoSQL — et se justifie par la nature ' +
-            'des avis : un schéma souple, appelé à évoluer (par exemple pour accueillir une réponse de ' +
-            'l\'artisan directement imbriquée dans l\'avis), des données lues artisan par artisan sans ' +
-            'jointure, et un volume amené à grandir. Les deux bases cohabitent : l\'artisan reste en ' +
-            'relationnel, ses avis en documentaire, le lien étant assuré par l\'identifiant de l\'artisan.'
+            'du référentiel — manipuler des données à la fois SQL et NoSQL. Il se justifie aussi par la ' +
+            'nature des avis. Leur schéma est souple et peut évoluer, par exemple pour accueillir une ' +
+            'réponse de l\'artisan imbriquée dans l\'avis. Ils se lisent artisan par artisan, sans jointure, ' +
+            'et leur volume est amené à grandir. Les deux bases cohabitent : l\'artisan reste en relationnel, ' +
+            'ses avis en documentaire, le lien étant assuré par l\'identifiant de l\'artisan.'
     ),
     code(`const reviewSchema = new mongoose.Schema({
   artisanId:  { type: Number, required: true, index: true },
@@ -708,6 +714,13 @@ CREATE TABLE artisans (
         'La connexion à MongoDB est volontairement non bloquante : si la base NoSQL est momentanément ' +
             'indisponible, l\'API relationnelle continue de fonctionner et les routes d\'avis renvoient un ' +
             'code 503 explicite.'
+    ),
+    p(
+        'Côté schéma physique, la collection « reviews » est décrite par le modèle Mongoose ' +
+            '(backend/src/models/Review.js), qui fait aussi office de validation : les types, les champs ' +
+            'obligatoires et les bornes (note de 1 à 5, longueurs minimales et maximales) sont contrôlés à ' +
+            'l\'écriture. Un index sur le champ artisanId, déclaré dans le modèle, accélère la lecture des ' +
+            'avis d\'un artisan ; Mongoose le crée automatiquement au démarrage.'
     ),
 
     h2('3.8 Composants d\'accès aux données (SQL et NoSQL)'),
@@ -747,20 +760,27 @@ const [stats] = await Review.aggregate([
     h2('3.10 Jeu d\'essai de la fonctionnalité la plus représentative'),
     p(
         'La fonctionnalité retenue est le dépôt d\'un avis sur la fiche d\'un artisan, suivi de sa ' +
-            'relecture. Elle est représentative car elle mobilise à la fois le front-end (formulaire React), ' +
-            'le back-end (validation, logique métier) et les deux bases de données : lecture de l\'artisan ' +
-            'en SQL, écriture puis lecture de l\'avis en NoSQL.'
+            'relecture. Elle a été choisie parce qu\'elle traverse toute l\'application : le formulaire ' +
+            'React en front-end, la validation et la logique métier en back-end, puis les deux bases de ' +
+            'données — lecture de l\'artisan en SQL, écriture puis relecture de l\'avis en NoSQL.'
+    ),
+    p(
+        'L\'objectif est de vérifier le parcours nominal (un avis bien enregistré et la note moyenne ' +
+            'recalculée) ainsi que la robustesse de l\'API face à deux cas limites.'
     ),
     simpleTable(
-        ['Rubrique', 'Détail'],
+        ['Cas', 'Données en entrée', 'Attendu', 'Obtenu'],
         [
-            ['Objectif', 'Vérifier qu\'un avis valide est bien enregistré côté MongoDB et que la note moyenne de l\'artisan est recalculée.'],
-            ['Données en entrée', 'POST /api/artisans/1/reviews avec authorName « Claire », rating 5, comment « Travail impeccable et très soigné. »'],
-            ['Données attendues', 'Réponse 201 et avis créé ; un GET ultérieur renvoie l\'avis et une note moyenne cohérente.'],
-            ['Données obtenues', 'Réponse 201 { success: true, review: {...} } ; le GET renvoie { count: 1, average: 5 }.'],
-            ['Analyse des écarts', 'Aucun écart : le résultat obtenu est conforme à l\'attendu. Les cas limites ont aussi été vérifiés (saisie invalide vers 400, base NoSQL indisponible vers 503).'],
+            ['Nominal', 'Deux avis sur l\'artisan 1 : Claire (5/5) puis Marc (3/5).', '201 à chaque dépôt ; le GET renvoie count 2 et average 4.', 'Conforme (count 2, average 4).'],
+            ['Saisie invalide', 'Un avis avec une note de 9 et un commentaire trop court.', '400 — erreur de validation.', 'Conforme (400, ValidationError).'],
+            ['Base NoSQL indisponible', 'Dépôt d\'un avis alors que MongoDB est arrêté.', '503 — service indisponible.', 'Conforme (503).'],
         ],
-        [2400, 6960]
+        [1700, 3060, 2400, 2200]
+    ),
+    p(
+        'Aucun écart entre l\'attendu et l\'obtenu. Le cas nominal et la saisie invalide sont couverts par ' +
+            'la suite de tests automatisée (commande npm test) ; l\'indisponibilité de MongoDB a été ' +
+            'vérifiée manuellement en arrêtant la base.'
     ),
 
     h2('3.11 Tests automatisés'),
@@ -878,17 +898,19 @@ const securitySection = [
 
     h3('4.2.3 Protection des données utilisateur'),
     p(
-        'Le formulaire de contact collecte le strict minimum (nom, e-mail, objet, message). La table ' +
-            'contact_messages enregistre ces données pour traçabilité. Une politique de purge automatique ' +
-            '(par exemple 12 mois glissants) pourra être ajoutée. La page « Données personnelles » sera ' +
-            'complétée par un cabinet spécialisé conformément au RGPD.'
+        'Le formulaire de contact collecte le strict minimum (nom, e-mail, objet, message), et la table ' +
+            'contact_messages les enregistre pour traçabilité. Une mention d\'information accompagne le ' +
+            'formulaire : finalité (transmettre la demande à l\'artisan), destinataire (l\'artisan ' +
+            'concerné), durée de conservation (12 mois) et droits d\'accès, de rectification et de ' +
+            'suppression, exerçables via la page « Données personnelles ». Aucune donnée n\'est utilisée à ' +
+            'des fins commerciales.'
     ),
 
     h3('4.2.4 Limitation du débit et anti-spam'),
     p(
         'Au-delà du middleware global, la route POST /api/artisans/:id/contact applique une limite plus ' +
-            "stricte (5 envois / 15 min / IP). Couplé au caractère obligatoire de la clé d’API, cela " +
-            'rend extrêmement coûteuses les tentatives de spam massif des artisans.'
+            "stricte (5 envois / 15 min / IP). Combinée au caractère obligatoire de la clé d’API, elle " +
+            'décourage les tentatives de spam massif visant les artisans.'
     ),
 
     new Paragraph({ children: [new PageBreak()] }),
