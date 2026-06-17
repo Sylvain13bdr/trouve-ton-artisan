@@ -310,7 +310,7 @@ const coverParagraphs = [
         spacing: { after: 120 },
         children: [
             new TextRun({
-                text: 'Formation Développeur Web',
+                text: 'Titre professionnel Développeur Web et Web Mobile (DWWM)',
                 size: 24,
                 color: COLOR_DARK,
             }),
@@ -321,7 +321,7 @@ const coverParagraphs = [
         spacing: { after: 1200 },
         children: [
             new TextRun({
-                text: 'Devoir bilan — Module : Publier son application Web',
+                text: 'Dossier de projet — Préparation à l\'examen du titre professionnel',
                 italics: true,
                 size: 22,
             }),
@@ -385,6 +385,47 @@ const tocParagraphs = [
         hyperlink: true,
         headingStyleRange: '1-3',
     }),
+    new Paragraph({ children: [new PageBreak()] }),
+];
+
+// -------- Introduction : Compétences du référentiel ---------------------
+
+const competencesSection = [
+    h1('Introduction — Compétences du référentiel couvertes'),
+    p(
+        'Ce dossier présente « Trouve ton artisan », une application web full-stack réalisée dans le ' +
+            'cadre de la préparation au titre professionnel Développeur Web et Web Mobile (DWWM). Le projet ' +
+            'met en œuvre les compétences obligatoires des deux activités-types du référentiel, côté ' +
+            'front-end comme back-end, avec un soin particulier porté à la sécurité, à l\'accessibilité et ' +
+            'à la couverture des données à la fois relationnelles (MySQL/MariaDB) et NoSQL (MongoDB).'
+    ),
+    h2('Activité-type 1 — Développer la partie front-end d\'une application web ou web mobile sécurisée'),
+    simpleTable(
+        ['Compétence', 'Mise en œuvre dans le projet'],
+        [
+            ['Maquetter des interfaces utilisateur web ou web mobile', 'Maquettes Figma en mobile-first pour les trois résolutions (mobile 375 px, tablette 768 px, ordinateur 1280 px), charte graphique respectée, schéma d\'enchaînement des écrans.'],
+            ['Réaliser des interfaces utilisateur statiques web ou web mobile', 'Composants React structurés, Bootstrap 5 et Sass, HTML sémantique, mise en page responsive, accessibilité WCAG 2.1 (lien d\'évitement, attributs ARIA, focus visible).'],
+            ['Développer la partie dynamique des interfaces utilisateur web ou web mobile', 'React (hooks d\'état et d\'effet), consommation de l\'API REST via un client fetch centralisé, formulaires dynamiques (contact et avis) avec validation côté client.'],
+        ],
+        [3200, 6160]
+    ),
+    h2('Activité-type 2 — Développer la partie back-end d\'une application web ou web mobile sécurisée'),
+    simpleTable(
+        ['Compétence', 'Mise en œuvre dans le projet'],
+        [
+            ['Mettre en place une base de données relationnelle', 'MySQL/MariaDB : MCD, MLD et modèle physique, respect des trois formes normales, contraintes (clés étrangères, CHECK, UNIQUE), vue de lecture, scripts de création et d\'alimentation.'],
+            ['Développer des composants d\'accès aux données SQL et NoSQL', 'Couche services dédiée : accès SQL via Sequelize (artisans, catégories, villes) ET accès NoSQL via Mongoose (avis clients stockés dans MongoDB).'],
+            ['Développer des composants métier côté serveur', 'Architecture en couches (routes → contrôleurs → services → modèles), logique métier isolée dans les services, validation, sécurité et gestion centralisée des erreurs.'],
+        ],
+        [3200, 6160]
+    ),
+    p(
+        'Les deux compétences non obligatoires dans le dossier — installer et configurer son environnement ' +
+            'de travail, et documenter le déploiement — sont également mises en œuvre (environnement ' +
+            'Node.js / VS Code / Git, déploiement Vercel + Render + base de données hébergée) et pourront ' +
+            'être détaillées lors de l\'entretien technique.',
+        { run: { italics: true } }
+    ),
     new Paragraph({ children: [new PageBreak()] }),
 ];
 
@@ -950,6 +991,7 @@ const doc = new Document({
             children: [
                 ...coverParagraphs,
                 ...tocParagraphs,
+                ...competencesSection,
                 ...contextSection,
                 ...mockupSection,
                 ...dbSection,
