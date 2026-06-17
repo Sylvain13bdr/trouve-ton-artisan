@@ -178,10 +178,18 @@ function numbered(text, level = 0) {
 }
 
 function code(text) {
+    const lines = String(text).split('\n');
     return new Paragraph({
         spacing: { after: 120 },
         shading: { type: ShadingType.CLEAR, fill: COLOR_LIGHT },
-        children: [new TextRun({ text, font: 'Consolas', size: 20 })],
+        children: lines.map((line, i) =>
+            new TextRun({
+                text: line,
+                font: 'Consolas',
+                size: 20,
+                ...(i > 0 ? { break: 1 } : {}),
+            })
+        ),
     });
 }
 
@@ -310,7 +318,7 @@ const coverParagraphs = [
         spacing: { after: 120 },
         children: [
             new TextRun({
-                text: 'Formation Développeur Web',
+                text: 'Titre professionnel Développeur Web et Web Mobile (DWWM)',
                 size: 24,
                 color: COLOR_DARK,
             }),
@@ -321,7 +329,7 @@ const coverParagraphs = [
         spacing: { after: 1200 },
         children: [
             new TextRun({
-                text: 'Devoir bilan — Module : Publier son application Web',
+                text: 'Dossier de projet — Préparation à l\'examen du titre professionnel',
                 italics: true,
                 size: 22,
             }),
@@ -388,6 +396,47 @@ const tocParagraphs = [
     new Paragraph({ children: [new PageBreak()] }),
 ];
 
+// -------- Introduction : Compétences du référentiel ---------------------
+
+const competencesSection = [
+    h1('Introduction — Compétences du référentiel couvertes'),
+    p(
+        'Ce dossier présente « Trouve ton artisan », une application web full-stack réalisée dans le ' +
+            'cadre de la préparation au titre professionnel Développeur Web et Web Mobile (DWWM). Le projet ' +
+            'met en œuvre les compétences obligatoires des deux activités-types du référentiel, côté ' +
+            'front-end comme back-end, avec un soin particulier porté à la sécurité, à l\'accessibilité et ' +
+            'à la couverture des données à la fois relationnelles (MySQL/MariaDB) et NoSQL (MongoDB).'
+    ),
+    h2('Activité-type 1 — Développer la partie front-end d\'une application web ou web mobile sécurisée'),
+    simpleTable(
+        ['Compétence', 'Mise en œuvre dans le projet'],
+        [
+            ['Maquetter des interfaces utilisateur web ou web mobile', 'Maquettes Figma en mobile-first pour les trois résolutions (mobile 375 px, tablette 768 px, ordinateur 1280 px), charte graphique respectée, schéma d\'enchaînement des écrans.'],
+            ['Réaliser des interfaces utilisateur statiques web ou web mobile', 'Composants React structurés, Bootstrap 5 et Sass, HTML sémantique, mise en page responsive, accessibilité WCAG 2.1 (lien d\'évitement, attributs ARIA, focus visible).'],
+            ['Développer la partie dynamique des interfaces utilisateur web ou web mobile', 'React (hooks d\'état et d\'effet), consommation de l\'API REST via un client fetch centralisé, formulaires dynamiques (contact et avis) avec validation côté client.'],
+        ],
+        [3200, 6160]
+    ),
+    h2('Activité-type 2 — Développer la partie back-end d\'une application web ou web mobile sécurisée'),
+    simpleTable(
+        ['Compétence', 'Mise en œuvre dans le projet'],
+        [
+            ['Mettre en place une base de données relationnelle', 'MySQL/MariaDB : MCD, MLD et modèle physique, respect des trois formes normales, contraintes (clés étrangères, CHECK, UNIQUE), vue de lecture, scripts de création et d\'alimentation.'],
+            ['Développer des composants d\'accès aux données SQL et NoSQL', 'Couche services dédiée : accès SQL via Sequelize (artisans, catégories, villes) ET accès NoSQL via Mongoose (avis clients stockés dans MongoDB).'],
+            ['Développer des composants métier côté serveur', 'Architecture en couches (routes → contrôleurs → services → modèles), logique métier isolée dans les services, validation, sécurité et gestion centralisée des erreurs.'],
+        ],
+        [3200, 6160]
+    ),
+    p(
+        'Les deux compétences non obligatoires dans le dossier — installer et configurer son environnement ' +
+            'de travail, et documenter le déploiement — sont également mises en œuvre (environnement ' +
+            'Node.js / VS Code / Git, déploiement Vercel + Render + base de données hébergée) et pourront ' +
+            'être détaillées lors de l\'entretien technique.',
+        { run: { italics: true } }
+    ),
+    new Paragraph({ children: [new PageBreak()] }),
+];
+
 // -------- Section 1 : Contexte -------------------------------------------
 
 const contextSection = [
@@ -401,7 +450,7 @@ const contextSection = [
             'l’une des régions les plus artisanales de France.'
     ),
     p(
-        "Pour entretenir cet engouement, la région souhaite créer une plateforme web mettant " +
+        "Pour valoriser ce tissu artisanal, la région souhaite créer une plateforme web mettant " +
             "directement en relation les particuliers et les artisans locaux. L’interlocuteur du projet " +
             'se trouve dans les bureaux de Lyon.'
     ),
@@ -418,7 +467,7 @@ const contextSection = [
     bullet('Conception mobile-first, fonctionnement optimal sur mobile, tablette et ordinateur.'),
     bullet('Sécurité renforcée (collectivité publique).'),
     bullet('Cohérence visuelle avec le site de la région Auvergne-Rhône-Alpes.'),
-    bullet('Stack imposée : React.js + Bootstrap + Sass (front), Node.js + Express + Sequelize + MySQL/MariaDB (back).'),
+    bullet('Stack : React + Bootstrap + Sass (front) ; Node.js + Express + Sequelize avec MySQL/MariaDB, et MongoDB/Mongoose pour les avis (back).'),
     bullet('Versioning sur GitHub, dépôt public.'),
     bullet('Accès à l’API restreint à l’application.'),
 
@@ -435,7 +484,7 @@ const contextSection = [
 // -------- Section 2 : Maquettes ------------------------------------------
 
 const mockupSection = [
-    h1('2. Maquettes Figma'),
+    h1('2. Réalisations front-end'),
     p(
         "Les maquettes ont été réalisées sous Figma, en mobile-first, pour les trois résolutions " +
             "demandées : mobile (375 px), tablette (768 px) et ordinateur (1280 px). La palette de " +
@@ -457,8 +506,9 @@ const mockupSection = [
     ),
     p('Police : Graphik (fallback Helvetica Neue / Arial).', { run: { italics: true } }),
     p(
-        'Graphik étant une police payante, Inter a été utilisée pour les maquettes Figma. ' +
-            'Le CSS du site bascule automatiquement sur Graphik dès que les fichiers de police seront fournis.'
+        'Graphik étant une police payante, Inter a servi de substitut pour les maquettes Figma. Côté site, ' +
+            'la police Graphik n\'est utilisée que si elle est déjà installée sur le poste ; sinon le rendu ' +
+            's\'appuie sur des polices système, sans téléchargement de fichier de police distant.'
     ),
 
     h2('2.2 Lien Figma'),
@@ -500,13 +550,72 @@ const mockupSection = [
 [Liste] ─ clic carte ────► [Fiche artisan]
 [Toute URL inconnue] ────► [404] ─ retour ─► [Accueil]`),
 
+    h2('2.5 Interfaces utilisateur statiques'),
+    p(
+        'Les interfaces sont construites en composants React et mises en forme avec Bootstrap 5 et Sass. ' +
+            'Le balisage reste sémantique et accessible. La section d\'accueil illustre une structure ' +
+            'statique simple : un en-tête de section, un titre principal et un bouton d\'appel à l\'action.'
+    ),
+    code(`<section className="hero">
+  <div className="container">
+    <h1>Trouvez l'artisan qu'il vous faut, pres de chez vous.</h1>
+    <p className="lead">Batiment, alimentation, services, fabrication.</p>
+    <Link to="/artisans" className="btn btn-primary btn-lg">
+      Voir tous les artisans
+    </Link>
+  </div>
+</section>`),
+
+    h2('2.6 Partie dynamique des interfaces'),
+    p(
+        'La partie dynamique repose sur les hooks de React. Le chargement des artisans, par exemple, se ' +
+            'déclenche à l\'affichage de la page et à chaque changement de filtre ; l\'état local gère ' +
+            'l\'attente, les données reçues et les erreurs éventuelles.'
+    ),
+    code(`useEffect(() => {
+  setLoading(true);
+  api.getArtisans({ category, q })
+    .then((data) => setArtisans(data))
+    .catch((err) => setError(err.message))
+    .finally(() => setLoading(false));
+}, [category, q]);`),
+
+    h2('2.7 Accessibilité et référencement'),
+    p(
+        'Le site vise la conformité WCAG 2.1 et, dans sa déclinaison française, le RGAA (Référentiel ' +
+            'Général d\'Amélioration de l\'Accessibilité), opposable aux organismes publics — ce qui est ' +
+            'directement pertinent ici, le commanditaire étant une collectivité. Concrètement : balises ' +
+            'sémantiques, lien d\'évitement vers le contenu principal, libellés associés à chaque champ de ' +
+            'formulaire, images décoratives neutralisées pour les lecteurs d\'écran (alt vide ou ' +
+            'aria-hidden), ordre de tabulation logique, focus visible et navigation entièrement au clavier. ' +
+            'Le composant de notation expose aussi bien les étoiles que la valeur chiffrée. Les contrastes de ' +
+            'la palette ont été vérifiés par rapport au seuil AA.'
+    ),
+    p(
+        'Côté référencement, chaque page définit son propre titre et sa méta-description grâce aux ' +
+            'métadonnées natives de React 19 (composant Seo), ce qui améliore l\'indexation par les moteurs ' +
+            'de recherche et l\'aperçu lors d\'un partage sur les réseaux sociaux. Les URL restent propres et ' +
+            'lisibles grâce à React Router.'
+    ),
+
+    h2('2.8 Éco-conception'),
+    p(
+        'Quelques principes d\'éco-conception ont été pris en compte. Les images des artisans sont chargées ' +
+            'en différé (lazy loading), ce qui évite de télécharger des visuels non affichés à l\'écran. La ' +
+            'typographie s\'appuie sur des polices déjà présentes sur le poste, sans téléchargement de ' +
+            'fichier distant. Côté serveur, l\'API ne renvoie que les colonnes utiles (pas de SELECT *) et ' +
+            's\'appuie sur une vue SQL qui pré-assemble les jointures, ce qui réduit le volume de données ' +
+            'transférées. Le build de production (Vite) minifie et compresse enfin les fichiers envoyés au ' +
+            'navigateur.'
+    ),
+
     new Paragraph({ children: [new PageBreak()] }),
 ];
 
 // -------- Section 3 : BDD ------------------------------------------------
 
 const dbSection = [
-    h1('3. Base de données'),
+    h1('3. Base de données et composants serveur'),
 
     h2('3.1 Règles de gestion'),
     bullet('Un artisan appartient à une seule spécialité.'),
@@ -562,7 +671,8 @@ CREATE TABLE artisans (
   created_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
                           ON UPDATE CURRENT_TIMESTAMP,
-  CONSTRAINT chk_rating CHECK (rating BETWEEN 0 AND 5),
+  CONSTRAINT chk_artisan_rating CHECK (rating >= 0.0 AND rating <= 5.0),
+  CONSTRAINT chk_artisan_email  CHECK (email LIKE '%_@_%.__%'),
   CONSTRAINT fk_artisan_specialty
     FOREIGN KEY (specialty_id) REFERENCES specialties(id)
     ON DELETE RESTRICT ON UPDATE CASCADE,
@@ -576,12 +686,115 @@ CREATE TABLE artisans (
             '(AlwaysData) est disponible dans database/remote/.'
     ),
 
-    h2('3.6 Jeu d\'essai'),
+    h2('3.6 Jeu d\'essai (données initiales)'),
     p('Issu du fichier data.xlsx fourni avec le brief :'),
     bullet('4 catégories : Bâtiment, Services, Fabrication, Alimentation.'),
     bullet('15 spécialités réparties dans les 4 catégories.'),
     bullet('14 villes uniques (Lyon revient 3 fois, Valence 2 fois, les autres 1 fois).'),
     bullet('17 artisans dont 3 mis en avant comme « artisans du mois ».'),
+
+    h2('3.7 Données NoSQL : les avis clients (MongoDB)'),
+    p(
+        'En complément de la base relationnelle, les avis déposés par les visiteurs sur la fiche d\'un ' +
+            'artisan sont stockés dans une base MongoDB, via l\'ODM Mongoose. Ce choix répond à l\'exigence ' +
+            'du référentiel — manipuler des données à la fois SQL et NoSQL. Il se justifie aussi par la ' +
+            'nature des avis. Leur schéma est souple et peut évoluer, par exemple pour accueillir une ' +
+            'réponse de l\'artisan imbriquée dans l\'avis. Ils se lisent artisan par artisan, sans jointure, ' +
+            'et leur volume est amené à grandir. Les deux bases cohabitent : l\'artisan reste en relationnel, ' +
+            'ses avis en documentaire, le lien étant assuré par l\'identifiant de l\'artisan.'
+    ),
+    code(`const reviewSchema = new mongoose.Schema({
+  artisanId:  { type: Number, required: true, index: true },
+  authorName: { type: String, required: true, minlength: 2, maxlength: 120 },
+  rating:     { type: Number, required: true, min: 1, max: 5 },
+  comment:    { type: String, required: true, minlength: 10, maxlength: 2000 },
+  reply: { message: String, repliedAt: Date }, // reponse eventuelle de l'artisan
+}, { timestamps: true });`),
+    p(
+        'La connexion à MongoDB est volontairement non bloquante : si la base NoSQL est momentanément ' +
+            'indisponible, l\'API relationnelle continue de fonctionner et les routes d\'avis renvoient un ' +
+            'code 503 explicite.'
+    ),
+    p(
+        'Côté schéma physique, la collection « reviews » est décrite par le modèle Mongoose ' +
+            '(backend/src/models/Review.js), qui fait aussi office de validation : les types, les champs ' +
+            'obligatoires et les bornes (note de 1 à 5, longueurs minimales et maximales) sont contrôlés à ' +
+            'l\'écriture. Un index sur le champ artisanId, déclaré dans le modèle, accélère la lecture des ' +
+            'avis d\'un artisan ; Mongoose le crée automatiquement au démarrage.'
+    ),
+
+    h2('3.8 Composants d\'accès aux données (SQL et NoSQL)'),
+    p(
+        'L\'accès aux données est isolé dans une couche de services, séparée des contrôleurs. Côté ' +
+            'relationnel, les services s\'appuient sur Sequelize, qui génère des requêtes paramétrées. Côté ' +
+            'documentaire, un service dédié interroge MongoDB. Les deux exposent le même type d\'interface ' +
+            'aux contrôleurs, ce qui garde le code homogène malgré les deux technologies de stockage.'
+    ),
+    code(`// Acces SQL (Sequelize) - liste filtree des artisans
+const results = await Artisan.findAll({
+  where,
+  include: fullInclude,
+  order: [['rating', 'DESC'], ['name', 'ASC']],
+});`),
+    code(`// Acces NoSQL (Mongoose) - avis d'un artisan + moyenne par agregation
+const items = await Review.find({ artisanId }).sort({ createdAt: -1 }).lean();
+const [stats] = await Review.aggregate([
+  { $match: { artisanId } },
+  { $group: { _id: '$artisanId', average: { $avg: '$rating' }, count: { $sum: 1 } } },
+]);`),
+
+    h2('3.9 Composants métier côté serveur'),
+    p(
+        'La logique métier est portée par les services, jamais par les contrôleurs, qui se contentent de ' +
+            'lire la requête et de mettre en forme la réponse. La création d\'un avis illustre la ' +
+            'collaboration des deux bases : le service vérifie d\'abord, côté relationnel, que l\'artisan ' +
+            'existe, avant d\'enregistrer l\'avis côté MongoDB.'
+    ),
+    code(`async function createReview(artisanId, { authorName, rating, comment }) {
+  const artisan = await Artisan.findByPk(artisanId);   // verification cote SQL
+  if (!artisan) return { notFound: true };
+  const review = await Review.create({ artisanId, authorName, rating, comment }); // ecriture NoSQL
+  return { review };
+}`),
+
+    h2('3.10 Jeu d\'essai de la fonctionnalité la plus représentative'),
+    p(
+        'La fonctionnalité retenue est le dépôt d\'un avis sur la fiche d\'un artisan, suivi de sa ' +
+            'relecture. Elle a été choisie parce qu\'elle traverse toute l\'application : le formulaire ' +
+            'React en front-end, la validation et la logique métier en back-end, puis les deux bases de ' +
+            'données — lecture de l\'artisan en SQL, écriture puis relecture de l\'avis en NoSQL.'
+    ),
+    p(
+        'L\'objectif est de vérifier le parcours nominal (un avis bien enregistré et la note moyenne ' +
+            'recalculée) ainsi que la robustesse de l\'API face à deux cas limites.'
+    ),
+    simpleTable(
+        ['Cas', 'Données en entrée', 'Attendu', 'Obtenu'],
+        [
+            ['Nominal', 'Deux avis sur l\'artisan 1 : Claire (5/5) puis Marc (3/5).', '201 à chaque dépôt ; le GET renvoie count 2 et average 4.', 'Conforme (count 2, average 4).'],
+            ['Saisie invalide', 'Un avis avec une note de 9 et un commentaire trop court.', '400 — erreur de validation.', 'Conforme (400, ValidationError).'],
+            ['Base NoSQL indisponible', 'Dépôt d\'un avis alors que MongoDB est arrêté.', '503 — service indisponible.', 'Conforme (503).'],
+        ],
+        [1700, 3060, 2400, 2200]
+    ),
+    p(
+        'Aucun écart entre l\'attendu et l\'obtenu. Le cas nominal et la saisie invalide sont couverts par ' +
+            'la suite de tests automatisée (commande npm test) ; l\'indisponibilité de MongoDB a été ' +
+            'vérifiée manuellement en arrêtant la base.'
+    ),
+
+    h2('3.11 Tests automatisés'),
+    p(
+        'Au-delà des tests de sécurité manuels (détaillés dans la veille), l\'API est couverte par une ' +
+            'suite de tests automatisés, exécutée avec Mocha, Chai et Supertest. La base relationnelle de ' +
+            'test utilise SQLite en mémoire et la base NoSQL un serveur MongoDB éphémère : les tests sont ' +
+            'ainsi rapides et isolés, sans toucher à aucune base réelle. La suite couvre les trois volets du ' +
+            'projet.'
+    ),
+    bullet('Artisans (SQL) : liste, fiche détaillée, artisan introuvable, recherche sans résultat.'),
+    bullet('Avis (NoSQL) : liste vide au départ, dépôt d\'un avis, recalcul de la note moyenne, artisan inexistant.'),
+    bullet('Sécurité : accès refusé sans clé d\'API ou avec une mauvaise clé, validation des entrées, route de santé publique.'),
+    p('La suite compte onze tests, tous au vert (commande npm test).'),
 
     new Paragraph({ children: [new PageBreak()] }),
 ];
@@ -685,17 +898,19 @@ const securitySection = [
 
     h3('4.2.3 Protection des données utilisateur'),
     p(
-        'Le formulaire de contact collecte le strict minimum (nom, e-mail, objet, message). La table ' +
-            'contact_messages enregistre ces données pour traçabilité. Une politique de purge automatique ' +
-            '(par exemple 12 mois glissants) pourra être ajoutée. La page « Données personnelles » sera ' +
-            'complétée par un cabinet spécialisé conformément au RGPD.'
+        'Le formulaire de contact collecte le strict minimum (nom, e-mail, objet, message), et la table ' +
+            'contact_messages les enregistre pour traçabilité. Une mention d\'information accompagne le ' +
+            'formulaire : finalité (transmettre la demande à l\'artisan), destinataire (l\'artisan ' +
+            'concerné), durée de conservation (12 mois) et droits d\'accès, de rectification et de ' +
+            'suppression, exerçables via la page « Données personnelles ». Aucune donnée n\'est utilisée à ' +
+            'des fins commerciales.'
     ),
 
     h3('4.2.4 Limitation du débit et anti-spam'),
     p(
         'Au-delà du middleware global, la route POST /api/artisans/:id/contact applique une limite plus ' +
-            "stricte (5 envois / 15 min / IP). Couplé au caractère obligatoire de la clé d’API, cela " +
-            'rend extrêmement coûteuses les tentatives de spam massif des artisans.'
+            "stricte (5 envois / 15 min / IP). Combinée au caractère obligatoire de la clé d’API, elle " +
+            'décourage les tentatives de spam massif visant les artisans.'
     ),
 
     new Paragraph({ children: [new PageBreak()] }),
@@ -950,6 +1165,7 @@ const doc = new Document({
             children: [
                 ...coverParagraphs,
                 ...tocParagraphs,
+                ...competencesSection,
                 ...contextSection,
                 ...mockupSection,
                 ...dbSection,

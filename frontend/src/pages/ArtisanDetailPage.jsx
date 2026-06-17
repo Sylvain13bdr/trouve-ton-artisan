@@ -257,6 +257,13 @@ export default function ArtisanDetailPage() {
                     <button type="submit" className="btn btn-primary mt-3" disabled={submitting}>
                         {submitting ? 'Envoi en cours…' : 'Envoyer le message'}
                     </button>
+
+                    <p className="form-text mt-3">
+                        Les informations saisies servent uniquement à transmettre votre demande à l'artisan,
+                        sont conservées 12 mois à des fins de traçabilité et ne font l'objet d'aucune
+                        utilisation commerciale. Vous disposez d'un droit d'accès, de rectification et de
+                        suppression via la page <Link to="/donnees-personnelles">Données personnelles</Link>.
+                    </p>
                 </form>
             </section>
         </>
