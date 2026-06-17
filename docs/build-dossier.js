@@ -506,9 +506,10 @@ const mockupSection = [
     ),
     p('Police : Graphik (fallback Helvetica Neue / Arial).', { run: { italics: true } }),
     p(
-        'Graphik étant une police payante, Inter a servi de substitut pour les maquettes Figma. Côté site, ' +
-            'la police Graphik n\'est utilisée que si elle est déjà installée sur le poste ; sinon le rendu ' +
-            's\'appuie sur des polices système, sans téléchargement de fichier de police distant.'
+        'Graphik étant une police sous licence, Inter a servi de substitut pour les maquettes Figma. Côté ' +
+            'site, la police Graphik (version d\'essai) est désormais auto-hébergée au format woff2 et ' +
+            'chargée via @font-face : le rendu reprend ainsi fidèlement la charte, avec repli sur des polices ' +
+            'système en cas de besoin.'
     ),
 
     h2('2.2 Lien Figma'),
@@ -602,8 +603,8 @@ const mockupSection = [
     p(
         'Quelques principes d\'éco-conception ont été pris en compte. Les images des artisans sont chargées ' +
             'en différé (lazy loading), ce qui évite de télécharger des visuels non affichés à l\'écran. La ' +
-            'typographie s\'appuie sur des polices déjà présentes sur le poste, sans téléchargement de ' +
-            'fichier distant. Côté serveur, l\'API ne renvoie que les colonnes utiles (pas de SELECT *) et ' +
+            'typographie est auto-hébergée au format woff2 (compressé), ce qui évite toute requête vers un ' +
+            'service tiers de polices. Côté serveur, l\'API ne renvoie que les colonnes utiles (pas de SELECT *) et ' +
             's\'appuie sur une vue SQL qui pré-assemble les jointures, ce qui réduit le volume de données ' +
             'transférées. Le build de production (Vite) minifie et compresse enfin les fichiers envoyés au ' +
             'navigateur.'
