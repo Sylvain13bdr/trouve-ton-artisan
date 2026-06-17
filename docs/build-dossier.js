@@ -178,10 +178,18 @@ function numbered(text, level = 0) {
 }
 
 function code(text) {
+    const lines = String(text).split('\n');
     return new Paragraph({
         spacing: { after: 120 },
         shading: { type: ShadingType.CLEAR, fill: COLOR_LIGHT },
-        children: [new TextRun({ text, font: 'Consolas', size: 20 })],
+        children: lines.map((line, i) =>
+            new TextRun({
+                text: line,
+                font: 'Consolas',
+                size: 20,
+                ...(i > 0 ? { break: 1 } : {}),
+            })
+        ),
     });
 }
 
@@ -547,7 +555,7 @@ const mockupSection = [
 // -------- Section 3 : BDD ------------------------------------------------
 
 const dbSection = [
-    h1('3. Base de données'),
+    h1('3. Base de données et composants serveur'),
 
     h2('3.1 Règles de gestion'),
     bullet('Un artisan appartient à une seule spécialité.'),
@@ -617,12 +625,88 @@ CREATE TABLE artisans (
             '(AlwaysData) est disponible dans database/remote/.'
     ),
 
-    h2('3.6 Jeu d\'essai'),
+    h2('3.6 Jeu d\'essai (données initiales)'),
     p('Issu du fichier data.xlsx fourni avec le brief :'),
     bullet('4 catégories : Bâtiment, Services, Fabrication, Alimentation.'),
     bullet('15 spécialités réparties dans les 4 catégories.'),
     bullet('14 villes uniques (Lyon revient 3 fois, Valence 2 fois, les autres 1 fois).'),
     bullet('17 artisans dont 3 mis en avant comme « artisans du mois ».'),
+
+    h2('3.7 Données NoSQL : les avis clients (MongoDB)'),
+    p(
+        'En complément de la base relationnelle, les avis déposés par les visiteurs sur la fiche d\'un ' +
+            'artisan sont stockés dans une base MongoDB, via l\'ODM Mongoose. Ce choix répond à l\'exigence ' +
+            'du référentiel — manipuler des données à la fois SQL et NoSQL — et se justifie par la nature ' +
+            'des avis : un schéma souple, appelé à évoluer (par exemple pour accueillir une réponse de ' +
+            'l\'artisan directement imbriquée dans l\'avis), des données lues artisan par artisan sans ' +
+            'jointure, et un volume amené à grandir. Les deux bases cohabitent : l\'artisan reste en ' +
+            'relationnel, ses avis en documentaire, le lien étant assuré par l\'identifiant de l\'artisan.'
+    ),
+    code(`const reviewSchema = new mongoose.Schema({
+  artisanId:  { type: Number, required: true, index: true },
+  authorName: { type: String, required: true, minlength: 2, maxlength: 120 },
+  rating:     { type: Number, required: true, min: 1, max: 5 },
+  comment:    { type: String, required: true, minlength: 10, maxlength: 2000 },
+  reply: { message: String, repliedAt: Date }, // reponse eventuelle de l'artisan
+}, { timestamps: true });`),
+    p(
+        'La connexion à MongoDB est volontairement non bloquante : si la base NoSQL est momentanément ' +
+            'indisponible, l\'API relationnelle continue de fonctionner et les routes d\'avis renvoient un ' +
+            'code 503 explicite.'
+    ),
+
+    h2('3.8 Composants d\'accès aux données (SQL et NoSQL)'),
+    p(
+        'L\'accès aux données est isolé dans une couche de services, séparée des contrôleurs. Côté ' +
+            'relationnel, les services s\'appuient sur Sequelize, qui génère des requêtes paramétrées. Côté ' +
+            'documentaire, un service dédié interroge MongoDB. Les deux exposent le même type d\'interface ' +
+            'aux contrôleurs, ce qui garde le code homogène malgré les deux technologies de stockage.'
+    ),
+    code(`// Acces SQL (Sequelize) - liste filtree des artisans
+const results = await Artisan.findAll({
+  where,
+  include: fullInclude,
+  order: [['rating', 'DESC'], ['name', 'ASC']],
+});`),
+    code(`// Acces NoSQL (Mongoose) - avis d'un artisan + moyenne par agregation
+const items = await Review.find({ artisanId }).sort({ createdAt: -1 }).lean();
+const [stats] = await Review.aggregate([
+  { $match: { artisanId } },
+  { $group: { _id: '$artisanId', average: { $avg: '$rating' }, count: { $sum: 1 } } },
+]);`),
+
+    h2('3.9 Composants métier côté serveur'),
+    p(
+        'La logique métier est portée par les services, jamais par les contrôleurs, qui se contentent de ' +
+            'lire la requête et de mettre en forme la réponse. La création d\'un avis illustre la ' +
+            'collaboration des deux bases : le service vérifie d\'abord, côté relationnel, que l\'artisan ' +
+            'existe, avant d\'enregistrer l\'avis côté MongoDB.'
+    ),
+    code(`async function createReview(artisanId, { authorName, rating, comment }) {
+  const artisan = await Artisan.findByPk(artisanId);   // verification cote SQL
+  if (!artisan) return { notFound: true };
+  const review = await Review.create({ artisanId, authorName, rating, comment }); // ecriture NoSQL
+  return { review };
+}`),
+
+    h2('3.10 Jeu d\'essai de la fonctionnalité la plus représentative'),
+    p(
+        'La fonctionnalité retenue est le dépôt d\'un avis sur la fiche d\'un artisan, suivi de sa ' +
+            'relecture. Elle est représentative car elle mobilise à la fois le front-end (formulaire React), ' +
+            'le back-end (validation, logique métier) et les deux bases de données : lecture de l\'artisan ' +
+            'en SQL, écriture puis lecture de l\'avis en NoSQL.'
+    ),
+    simpleTable(
+        ['Rubrique', 'Détail'],
+        [
+            ['Objectif', 'Vérifier qu\'un avis valide est bien enregistré côté MongoDB et que la note moyenne de l\'artisan est recalculée.'],
+            ['Données en entrée', 'POST /api/artisans/1/reviews avec authorName « Claire », rating 5, comment « Travail impeccable et très soigné. »'],
+            ['Données attendues', 'Réponse 201 et avis créé ; un GET ultérieur renvoie l\'avis et une note moyenne cohérente.'],
+            ['Données obtenues', 'Réponse 201 { success: true, review: {...} } ; le GET renvoie { count: 1, average: 5 }.'],
+            ['Analyse des écarts', 'Aucun écart : le résultat obtenu est conforme à l\'attendu. Les cas limites ont aussi été vérifiés (saisie invalide vers 400, base NoSQL indisponible vers 503).'],
+        ],
+        [2400, 6960]
+    ),
 
     new Paragraph({ children: [new PageBreak()] }),
 ];
