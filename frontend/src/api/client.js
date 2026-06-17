@@ -49,6 +49,12 @@ export const api = {
     },
     getArtisan: (id) => request(`/artisans/${id}`),
     getTopOfMonth: () => request('/artisans/top-of-month'),
+    getReviews: (id) => request(`/artisans/${id}/reviews`),
+    postReview: (id, data) =>
+        request(`/artisans/${id}/reviews`, {
+            method: 'POST',
+            body: JSON.stringify(data),
+        }),
     postContact: (id, data) =>
         request(`/artisans/${id}/contact`, {
             method: 'POST',
