@@ -1,6 +1,9 @@
 /**
  * Header global : logo cliquable, menu des catégories (depuis l'API),
  * barre de recherche par nom d'artisan. Identique sur toutes les pages.
+ *
+ * Le menu mobile est contrôlé par React : il se referme automatiquement
+ * au clic sur un lien ou après le lancement d'une recherche.
  */
 import { useEffect, useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
@@ -9,6 +12,7 @@ import { api } from '../api/client.js';
 export default function Header() {
     const [categories, setCategories] = useState([]);
     const [query, setQuery] = useState('');
+    const [menuOpen, setMenuOpen] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -25,10 +29,15 @@ export default function Header() {
         };
     }, []);
 
+    function closeMenu() {
+        setMenuOpen(false);
+    }
+
     function handleSubmit(e) {
         e.preventDefault();
         const trimmed = query.trim();
         if (trimmed.length === 0) return;
+        closeMenu();
         navigate(`/artisans?q=${encodeURIComponent(trimmed)}`);
     }
 
@@ -41,7 +50,12 @@ export default function Header() {
                 className="navbar navbar-expand-lg container py-2"
                 aria-label="Navigation principale"
             >
-                <Link to="/" className="navbar-brand" aria-label="Trouve ton artisan — Retour à l'accueil">
+                <Link
+                    to="/"
+                    className="navbar-brand"
+                    aria-label="Trouve ton artisan — Retour à l'accueil"
+                    onClick={closeMenu}
+                >
                     <img
                         src="/images/logo.png"
                         alt="Trouve ton artisan — Avec la région Auvergne-Rhône-Alpes"
@@ -52,16 +66,15 @@ export default function Header() {
                 <button
                     className="navbar-toggler"
                     type="button"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#mainNav"
+                    onClick={() => setMenuOpen((open) => !open)}
                     aria-controls="mainNav"
-                    aria-expanded="false"
-                    aria-label="Ouvrir le menu"
+                    aria-expanded={menuOpen}
+                    aria-label={menuOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
                 >
                     <span className="navbar-toggler-icon" />
                 </button>
 
-                <div className="collapse navbar-collapse" id="mainNav">
+                <div className={`collapse navbar-collapse${menuOpen ? ' show' : ''}`} id="mainNav">
                     <ul className="navbar-nav me-auto mb-2 mb-lg-0">
                         {categories.map((cat) => (
                             <li key={cat.id} className="nav-item">
@@ -70,6 +83,7 @@ export default function Header() {
                                     className={({ isActive }) =>
                                         `nav-link ${isActive ? 'active' : ''}`
                                     }
+                                    onClick={closeMenu}
                                 >
                                     {cat.name}
                                 </NavLink>

@@ -76,7 +76,7 @@ export default function ArtisansListPage() {
                         <div className="row g-4">
                             {artisans.map((artisan) => (
                                 <div key={artisan.id} className="col-sm-6 col-lg-4">
-                                    <ArtisanCard artisan={artisan} />
+                                    <ArtisanCard artisan={artisan} headingLevel="h2" />
                                 </div>
                             ))}
                         </div>
