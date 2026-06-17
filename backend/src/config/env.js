@@ -26,6 +26,15 @@ const env = {
         password: process.env.DB_PASSWORD,
     },
 
+    // Connexion NoSQL (MongoDB) pour les avis clients. Optionnelle : en
+    // développement, pointe par défaut vers un MongoDB local ; en production,
+    // doit être fournie explicitement (ex. MongoDB Atlas).
+    mongoUri:
+        process.env.MONGODB_URI ||
+        ((process.env.NODE_ENV || 'development') !== 'production'
+            ? 'mongodb://127.0.0.1:27017/trouve_ton_artisan'
+            : ''),
+
     corsOrigins: (process.env.CORS_ORIGIN || '')
         .split(',')
         .map((o) => o.trim())
@@ -46,6 +55,7 @@ const env = {
         windowMs: Number(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000,
         max: Number(process.env.RATE_LIMIT_MAX) || 100,
         contactMax: Number(process.env.CONTACT_RATE_LIMIT_MAX) || 5,
+        reviewMax: Number(process.env.REVIEW_RATE_LIMIT_MAX) || 10,
     },
 };
 

@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Seo from '../components/Seo.jsx';
 import Rating from '../components/Rating.jsx';
+import ArtisanReviews from '../components/ArtisanReviews.jsx';
 import { api } from '../api/client.js';
 import { categorySlug, initials } from '../utils/avatar.js';
 
@@ -171,6 +172,8 @@ export default function ArtisanDetailPage() {
                         )}
                     </div>
                 </div>
+
+                <ArtisanReviews artisanId={artisan.id} />
 
                 <h2 className="h4 mt-5 mb-3">Contacter {artisan.name}</h2>
                 <p className="text-muted">Une réponse vous sera apportée sous 48&nbsp;h.</p>
