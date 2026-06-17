@@ -467,7 +467,7 @@ const contextSection = [
     bullet('Conception mobile-first, fonctionnement optimal sur mobile, tablette et ordinateur.'),
     bullet('Sécurité renforcée (collectivité publique).'),
     bullet('Cohérence visuelle avec le site de la région Auvergne-Rhône-Alpes.'),
-    bullet('Stack imposée : React.js + Bootstrap + Sass (front), Node.js + Express + Sequelize + MySQL/MariaDB (back).'),
+    bullet('Stack : React + Bootstrap + Sass (front) ; Node.js + Express + Sequelize avec MySQL/MariaDB, et MongoDB/Mongoose pour les avis (back).'),
     bullet('Versioning sur GitHub, dépôt public.'),
     bullet('Accès à l’API restreint à l’application.'),
 
@@ -484,7 +484,7 @@ const contextSection = [
 // -------- Section 2 : Maquettes ------------------------------------------
 
 const mockupSection = [
-    h1('2. Maquettes Figma'),
+    h1('2. Réalisations front-end'),
     p(
         "Les maquettes ont été réalisées sous Figma, en mobile-first, pour les trois résolutions " +
             "demandées : mobile (375 px), tablette (768 px) et ordinateur (1280 px). La palette de " +
@@ -506,8 +506,9 @@ const mockupSection = [
     ),
     p('Police : Graphik (fallback Helvetica Neue / Arial).', { run: { italics: true } }),
     p(
-        'Graphik étant une police payante, Inter a été utilisée pour les maquettes Figma. ' +
-            'Le CSS du site bascule automatiquement sur Graphik dès que les fichiers de police seront fournis.'
+        'Graphik étant une police payante, Inter a servi de substitut pour les maquettes Figma. Côté site, ' +
+            'la police Graphik n\'est utilisée que si elle est déjà installée sur le poste ; sinon le rendu ' +
+            's\'appuie sur des polices système, sans téléchargement de fichier de police distant.'
     ),
 
     h2('2.2 Lien Figma'),
@@ -548,6 +549,60 @@ const mockupSection = [
 
 [Liste] ─ clic carte ────► [Fiche artisan]
 [Toute URL inconnue] ────► [404] ─ retour ─► [Accueil]`),
+
+    h2('2.5 Interfaces utilisateur statiques'),
+    p(
+        'Les interfaces sont construites en composants React et mises en forme avec Bootstrap 5 et Sass. ' +
+            'Le balisage reste sémantique et accessible. La section d\'accueil illustre une structure ' +
+            'statique simple : un en-tête de section, un titre principal et un bouton d\'appel à l\'action.'
+    ),
+    code(`<section className="hero">
+  <div className="container">
+    <h1>Trouvez l'artisan qu'il vous faut, pres de chez vous.</h1>
+    <p className="lead">Batiment, alimentation, services, fabrication.</p>
+    <Link to="/artisans" className="btn btn-primary btn-lg">
+      Voir tous les artisans
+    </Link>
+  </div>
+</section>`),
+
+    h2('2.6 Partie dynamique des interfaces'),
+    p(
+        'La partie dynamique repose sur les hooks de React. Le chargement des artisans, par exemple, se ' +
+            'déclenche à l\'affichage de la page et à chaque changement de filtre ; l\'état local gère ' +
+            'l\'attente, les données reçues et les erreurs éventuelles.'
+    ),
+    code(`useEffect(() => {
+  setLoading(true);
+  api.getArtisans({ category, q })
+    .then((data) => setArtisans(data))
+    .catch((err) => setError(err.message))
+    .finally(() => setLoading(false));
+}, [category, q]);`),
+
+    h2('2.7 Accessibilité et référencement'),
+    p(
+        'Le site vise la conformité WCAG 2.1 : balises sémantiques, lien d\'évitement vers le contenu ' +
+            'principal, attributs ARIA sur les éléments interactifs, focus visible et navigation au clavier. ' +
+            'Le composant de notation expose aussi bien les étoiles que la valeur chiffrée, pour les lecteurs ' +
+            'd\'écran.'
+    ),
+    p(
+        'Côté référencement, chaque page définit son titre et sa méta-description grâce aux métadonnées ' +
+            'natives de React 19 (composant Seo), ce qui favorise le référencement et le partage sur les ' +
+            'réseaux sociaux. Les URL restent propres et lisibles grâce à React Router.'
+    ),
+
+    h2('2.8 Éco-conception'),
+    p(
+        'Quelques principes d\'éco-conception ont été pris en compte. Les images des artisans sont chargées ' +
+            'en différé (lazy loading), ce qui évite de télécharger des visuels non affichés à l\'écran. La ' +
+            'typographie s\'appuie sur des polices déjà présentes sur le poste, sans téléchargement de ' +
+            'fichier de police distant. Côté serveur, l\'API ne renvoie que les colonnes utiles (pas de ' +
+            'SELECT *) et s\'appuie sur une vue SQL qui pré-assemble les jointures, ce qui réduit le volume ' +
+            'de données transférées. Enfin, le build de production (Vite) minifie et compresse les fichiers ' +
+            'envoyés au navigateur, et les dépendances ont été limitées au nécessaire.'
+    ),
 
     new Paragraph({ children: [new PageBreak()] }),
 ];
@@ -707,6 +762,19 @@ const [stats] = await Review.aggregate([
         ],
         [2400, 6960]
     ),
+
+    h2('3.11 Tests automatisés'),
+    p(
+        'Au-delà des tests de sécurité manuels (détaillés dans la veille), l\'API est couverte par une ' +
+            'suite de tests automatisés, exécutée avec Mocha, Chai et Supertest. La base relationnelle de ' +
+            'test utilise SQLite en mémoire et la base NoSQL un serveur MongoDB éphémère : les tests sont ' +
+            'ainsi rapides et isolés, sans toucher à aucune base réelle. La suite couvre les trois volets du ' +
+            'projet.'
+    ),
+    bullet('Artisans (SQL) : liste, fiche détaillée, artisan introuvable, recherche sans résultat.'),
+    bullet('Avis (NoSQL) : liste vide au départ, dépôt d\'un avis, recalcul de la note moyenne, artisan inexistant.'),
+    bullet('Sécurité : accès refusé sans clé d\'API ou avec une mauvaise clé, validation des entrées, route de santé publique.'),
+    p('La suite compte onze tests, tous au vert (commande npm test).'),
 
     new Paragraph({ children: [new PageBreak()] }),
 ];
