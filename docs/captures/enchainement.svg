@@ -1,0 +1,41 @@
+<svg viewBox="0 0 640 900" xmlns="http://www.w3.org/2000/svg" role="img" width="640" height="900">
+  <title>Schema d'enchainement des ecrans - Trouve ton artisan</title>
+  <desc>La page 404 renvoie a l'accueil ; depuis l'accueil on va vers la liste des artisans (categorie ou recherche) ou directement vers une fiche (artisan du mois) ; un clic sur une carte ouvre la fiche ; la fiche mene au formulaire de contact, puis a une confirmation.</desc>
+  <defs>
+    <marker id="ar" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#6b7280"/>
+    </marker>
+  </defs>
+  <g fill="none" stroke="#6b7280" stroke-width="2">
+    <line x1="320" y1="102" x2="320" y2="172" marker-end="url(#ar)"/>
+    <line x1="320" y1="237" x2="320" y2="307" marker-end="url(#ar)"/>
+    <line x1="320" y1="372" x2="320" y2="482" marker-end="url(#ar)"/>
+    <line x1="320" y1="547" x2="320" y2="642" marker-end="url(#ar)"/>
+    <line x1="320" y1="707" x2="320" y2="777" marker-end="url(#ar)"/>
+    <path d="M120 206 H60 V516 H117" marker-end="url(#ar)"/>
+  </g>
+  <g>
+    <rect x="120" y="40"  width="400" height="62" rx="10" fill="#ffffff" stroke="#0074c7" stroke-width="2"/>
+    <rect x="120" y="175" width="400" height="62" rx="10" fill="#ffffff" stroke="#0074c7" stroke-width="2"/>
+    <rect x="120" y="310" width="400" height="62" rx="10" fill="#ffffff" stroke="#0074c7" stroke-width="2"/>
+    <rect x="120" y="485" width="400" height="62" rx="10" fill="#ffffff" stroke="#0074c7" stroke-width="2"/>
+    <rect x="120" y="645" width="400" height="62" rx="10" fill="#ffffff" stroke="#0074c7" stroke-width="2"/>
+    <rect x="120" y="780" width="400" height="62" rx="10" fill="#ffffff" stroke="#0074c7" stroke-width="2"/>
+  </g>
+  <g fill="#1f2733" font-family="Segoe UI, Arial, sans-serif" font-size="16" font-weight="600" text-anchor="middle">
+    <text x="320" y="77">Page 404</text>
+    <text x="320" y="212">Accueil</text>
+    <text x="320" y="347">Liste des artisans</text>
+    <text x="320" y="522">Fiche artisan</text>
+    <text x="320" y="682">Formulaire de contact</text>
+    <text x="320" y="817">Confirmation</text>
+  </g>
+  <g font-family="Segoe UI, Arial, sans-serif" font-size="12.5" fill="#384050" text-anchor="middle">
+    <g><rect x="294" y="128" width="52" height="18" rx="4" fill="#ffffff"/><text x="320" y="141">retour</text></g>
+    <g><rect x="240" y="263" width="160" height="18" rx="4" fill="#ffffff"/><text x="320" y="276">categorie ou recherche</text></g>
+    <g><rect x="260" y="418" width="120" height="18" rx="4" fill="#ffffff"/><text x="320" y="431">clic sur une carte</text></g>
+    <g><rect x="286" y="585" width="68" height="18" rx="4" fill="#ffffff"/><text x="320" y="598">contacter</text></g>
+    <g><rect x="298" y="733" width="44" height="18" rx="4" fill="#ffffff"/><text x="320" y="746">envoi</text></g>
+    <g transform="translate(46,361) rotate(-90)"><rect x="-50" y="-9" width="100" height="18" rx="4" fill="#ffffff"/><text x="0" y="4">artisan du mois</text></g>
+  </g>
+</svg>

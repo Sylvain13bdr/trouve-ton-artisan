@@ -54,6 +54,7 @@ const FIGMA_DIMS = {
     'fiche-mobile.png':      { w: 375,  h: 1256 },
     '404-desktop.png':       { w: 1280, h: 672 },
     '404-mobile.png':        { w: 375,  h: 542 },
+    'enchainement.svg':      { w: 640,  h: 900 },
 };
 
 /**
@@ -111,6 +112,58 @@ function image(filename, opts = {}) {
         );
     }
     return paragraphs;
+}
+
+// PNG 1x1 transparent : fallback exigé par Word pour les images SVG
+// (Word et LibreOffice affichent le SVG vectoriel ; le fallback ne sert
+// qu'aux visionneuses anciennes).
+const SVG_FALLBACK_PNG = Buffer.from(
+    'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==',
+    'base64'
+);
+
+/**
+ * Insère une image SVG (vectorielle) redimensionnée pour tenir dans la page A4.
+ */
+function svgImage(filename, opts = {}) {
+    const filePath = path.join(__dirname, 'captures', filename);
+    const dims = FIGMA_DIMS[filename] || { w: 640, h: 900 };
+    const maxW = opts.maxW || 400;
+    const maxH = opts.maxH || 600;
+    const ratio = Math.min(maxW / dims.w, maxH / dims.h, 1);
+    const width = Math.round(dims.w * ratio);
+    const height = Math.round(dims.h * ratio);
+
+    return [
+        new Paragraph({
+            alignment: AlignmentType.CENTER,
+            spacing: { before: 100, after: opts.caption ? 60 : 180 },
+            children: [
+                new ImageRun({
+                    type: 'svg',
+                    data: fs.readFileSync(filePath),
+                    transformation: { width, height },
+                    fallback: { type: 'png', data: SVG_FALLBACK_PNG },
+                    altText: {
+                        title: opts.caption || filename,
+                        description: opts.caption || filename,
+                        name: filename,
+                    },
+                }),
+            ],
+        }),
+        ...(opts.caption
+            ? [
+                  new Paragraph({
+                      alignment: AlignmentType.CENTER,
+                      spacing: { after: 180 },
+                      children: [
+                          new TextRun({ text: opts.caption, italics: true, size: 18, color: COLOR_DARK }),
+                      ],
+                  }),
+              ]
+            : []),
+    ];
 }
 
 // Bloc 3 résolutions empilées pour une page donnée
@@ -541,15 +594,13 @@ const mockupSection = [
     ...image('404-desktop.png', { maxW: 540, caption: '404 — Desktop (1280 px)' }),
 
     h2('2.4 Enchaînement des écrans'),
-    code(`[Accueil] ─ menu catégorie ────► [Liste filtrée]
-          ─ recherche ─────────► [Liste filtrée]
-          ─ artisan du mois ────► [Fiche artisan]
-                                          │
-                                          ▼
-                                  [Formulaire] ──► confirmation
-
-[Liste] ─ clic carte ────► [Fiche artisan]
-[Toute URL inconnue] ────► [404] ─ retour ─► [Accueil]`),
+    p(
+        'Le schéma ci-dessous résume la navigation entre les écrans du site : depuis la page ' +
+            'd\'accueil vers la liste (par catégorie ou recherche) ou une fiche (artisan du mois), ' +
+            'puis le formulaire de contact et sa confirmation. Toute URL inconnue mène à la page ' +
+            '404, qui ramène à l\'accueil.'
+    ),
+    ...svgImage('enchainement.svg', { maxW: 410, maxH: 620 }),
 
     h2('2.5 Interfaces utilisateur statiques'),
     p(
