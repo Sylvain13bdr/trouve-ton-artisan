@@ -55,6 +55,7 @@ const FIGMA_DIMS = {
     '404-desktop.png':       { w: 1280, h: 672 },
     '404-mobile.png':        { w: 375,  h: 542 },
     'enchainement.svg':      { w: 640,  h: 900 },
+    'enchainement.png':      { w: 1400, h: 1969 },
 };
 
 /**
@@ -600,7 +601,7 @@ const mockupSection = [
             'puis le formulaire de contact et sa confirmation. Toute URL inconnue mène à la page ' +
             '404, qui ramène à l\'accueil.'
     ),
-    ...svgImage('enchainement.svg', { maxW: 410, maxH: 620 }),
+    ...image('enchainement.png', { maxW: 410, maxH: 620 }),
 
     h2('2.5 Interfaces utilisateur statiques'),
     p(
