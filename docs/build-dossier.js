@@ -532,6 +532,26 @@ const contextSection = [
     bullet('Lien vers le site déployé en ligne.'),
     bullet('Fichier README.md à la racine du dépôt.'),
 
+    h2('1.5 Environnement humain et technique, objectifs de qualité'),
+    p(
+        'Le projet a été mené en autonomie complète, du maquettage au déploiement, dans le cadre de la ' +
+            'formation Développeur Web et Web Mobile du Centre Européen de Formation. L\'interlocuteur ' +
+            'métier est le service de la région situé à Lyon, qui a fourni le brief, la charte graphique ' +
+            'et les données des artisans.'
+    ),
+    p(
+        'Côté technique, le développement s\'est fait sous Windows 11 avec VS Code et Node.js, Git pour le ' +
+            'versioning (dépôt GitHub public, travail par branches et pull requests), XAMPP (MySQL/MariaDB) ' +
+            'et MongoDB en local, puis un hébergement Vercel pour le frontend, Render pour l\'API et ' +
+            'AlwaysData pour la base de données.'
+    ),
+    p(
+        'Les objectifs de qualité fixés en début de projet : accessibilité conforme WCAG 2.1 / RGAA, ' +
+            'fonctionnement mobile, tablette et ordinateur (approche mobile-first), sécurité alignée sur ' +
+            'les recommandations de l\'OWASP, tests automatisés de l\'API (Mocha) et documentation complète ' +
+            'du projet (README, scripts SQL, dossier technique).'
+    ),
+
     new Paragraph({ children: [new PageBreak()] }),
 ];
 
