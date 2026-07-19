@@ -534,17 +534,23 @@ const contextSection = [
 
     h2('1.5 Environnement humain et technique, objectifs de qualité'),
     p(
-        'Le projet a été mené en autonomie complète, du maquettage au déploiement, dans le cadre de la ' +
-            'formation Développeur Web et Web Mobile du Centre Européen de Formation. L\'interlocuteur ' +
-            'métier est le service de la région situé à Lyon, qui a fourni le brief, la charte graphique ' +
-            'et les données des artisans.'
+        'L\'ensemble du projet a été réalisé par un seul développeur, en autonomie complète : maquettage, ' +
+            'développement front-end et back-end, mise en place des bases de données, tests, déploiement et ' +
+            'rédaction des livrables. Ce travail s\'inscrit dans la formation Développeur Web et Web Mobile ' +
+            'du Centre Européen de Formation. L\'interlocuteur métier est le service de la région situé à ' +
+            'Lyon, qui a fourni le brief, la charte graphique et les données des artisans.'
     ),
-    p(
-        'Côté technique, le développement s\'est fait sous Windows 11 avec VS Code et Node.js, Git pour le ' +
-            'versioning (dépôt GitHub public, travail par branches et pull requests), XAMPP (MySQL/MariaDB) ' +
-            'et MongoDB en local, puis un hébergement Vercel pour le frontend, Render pour l\'API et ' +
-            'AlwaysData pour la base de données.'
-    ),
+    p('L\'environnement technique s\'articule autour d\'un PC sous Windows 11, avec les outils suivants :'),
+    bullet('Visual Studio Code : éditeur de code.'),
+    bullet('Node.js et npm : exécution du serveur et gestion des dépendances.'),
+    bullet('Git et GitHub : versioning, travail par branches et pull requests, dépôt public.'),
+    bullet('XAMPP : serveur MySQL/MariaDB local, administré via phpMyAdmin.'),
+    bullet('MongoDB Community Server : base NoSQL locale pour les avis clients.'),
+    bullet('Figma : réalisation des maquettes dans les trois résolutions.'),
+    bullet('Mocha, Chai et Supertest : tests automatisés de l\'API.'),
+    bullet('Navigateurs et leurs outils de développement : vérification du responsive et de l\'accessibilité.'),
+    bullet('Vercel, Render et AlwaysData : hébergement du frontend, de l\'API et de la base de données.'),
+    bullet('Word et PowerPoint : rédaction du dossier de projet et du support de présentation.'),
     p(
         'Les objectifs de qualité fixés en début de projet : accessibilité conforme WCAG 2.1 / RGAA, ' +
             'fonctionnement mobile, tablette et ordinateur (approche mobile-first), sécurité alignée sur ' +
