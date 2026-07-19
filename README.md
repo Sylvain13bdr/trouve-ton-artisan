@@ -11,35 +11,38 @@
 3. [Prérequis](#prérequis)
 4. [Installation](#installation)
 5. [Lancement en développement](#lancement-en-développement)
-6. [Build et déploiement](#build-et-déploiement)
-7. [Endpoints de l'API](#endpoints-de-lapi)
-8. [Sécurité](#sécurité)
-9. [Accessibilité et responsive](#accessibilité-et-responsive)
-10. [Liens utiles](#liens-utiles)
+6. [Tests automatisés](#tests-automatisés)
+7. [Build et déploiement](#build-et-déploiement)
+8. [Endpoints de l'API](#endpoints-de-lapi)
+9. [Sécurité](#sécurité)
+10. [Accessibilité et responsive](#accessibilité-et-responsive)
+11. [Liens utiles](#liens-utiles)
 
 ## Aperçu
 
-- **Frontend** : React 18 + Vite + Bootstrap 5 + Sass — mobile-first, WCAG 2.1.
-- **API** : Node.js + Express + Sequelize.
-- **Base de données** : MySQL 8 / MariaDB 10.
+- **Frontend** : React 19 + Vite + Bootstrap 5 + Sass — mobile-first, WCAG 2.1.
+- **API** : Node.js + Express + Sequelize (SQL) + Mongoose (NoSQL).
+- **Bases de données** : MySQL 8 / MariaDB 10 (artisans, catégories, villes, messages)
+  et MongoDB (avis clients).
 - **Authentification API** : clé partagée (`x-api-key`) entre le front et l'API.
-- **Hébergement** : Vercel (front) + Render (API) + Aiven (MySQL) (suggéré).
+- **Hébergement** : Vercel (front) + Render (API) + AlwaysData (MySQL).
 
 ## Architecture du projet
 
 ```text
 trouve-ton-artisan/
-├── backend/              # API Express + Sequelize
+├── backend/              # API Express + Sequelize + Mongoose
 │   ├── src/
-│   │   ├── config/       # env + connexion Sequelize
-│   │   ├── controllers/  # logique métier
+│   │   ├── config/       # env + connexions Sequelize (SQL) et Mongoose (NoSQL)
+│   │   ├── controllers/  # mise en forme des requêtes/réponses HTTP
 │   │   ├── middlewares/  # apiKey, validation, erreurs
-│   │   ├── models/       # Category / Specialty / Artisan / ContactMessage
+│   │   ├── models/       # Category / Specialty / City / Artisan / ContactMessage / Review
 │   │   ├── routes/       # routes Express
-│   │   ├── services/     # mailer (Nodemailer)
+│   │   ├── services/     # logique métier (artisans, avis, mailer…)
 │   │   ├── scripts/      # outils en ligne de commande
 │   │   ├── app.js
 │   │   └── server.js
+│   ├── tests/            # tests automatisés (Mocha + Chai + Supertest)
 │   ├── .env.example
 │   └── package.json
 │
@@ -66,12 +69,16 @@ trouve-ton-artisan/
 
 ## Prérequis
 
-| Outil          | Version minimale | Vérifier avec    |
-|----------------|------------------|------------------|
-| Node.js        | 18.x             | `node -v`        |
-| npm            | 9.x              | `npm -v`         |
-| MySQL/MariaDB  | 8.x / 10.x       | `mysql --version`|
-| Git            | 2.30+            | `git --version`  |
+| Outil          | Version minimale | Vérifier avec      |
+|----------------|------------------|--------------------|
+| Node.js        | 18.x             | `node -v`          |
+| npm            | 9.x              | `npm -v`           |
+| MySQL/MariaDB  | 8.x / 10.x       | `mysql --version`  |
+| MongoDB        | 7.x              | `mongod --version` |
+| Git            | 2.30+            | `git --version`    |
+
+> MongoDB stocke les avis clients. Sa connexion est non bloquante : sans MongoDB,
+> l'API démarre quand même et seules les routes d'avis répondent 503.
 
 ## Installation
 
@@ -97,7 +104,7 @@ SQL
 
 # 4. Backend
 cd backend
-cp .env.example .env       # adapter les valeurs (DB, API_KEY, SMTP, CORS)
+cp .env.example .env       # adapter les valeurs (DB, MONGODB_URI, API_KEY, SMTP, CORS)
 npm install
 
 # 5. Frontend
@@ -129,8 +136,20 @@ Test rapide de la connexion à la base :
 ```bash
 cd backend
 npm run db:test
-# -> { categories: 4, specialties: 15, artisans: 17 }
+# -> { categories: 4, specialties: 15, cities: 14, artisans: 17 }
 ```
+
+## Tests automatisés
+
+```bash
+cd backend
+npm test        # Mocha + Chai + Supertest — 11 tests
+```
+
+La suite couvre les endpoints SQL (artisans), NoSQL (avis) et la sécurité
+(clé d'API, validation). Elle s'exécute en isolation complète : SQLite en
+mémoire pour le relationnel, serveur MongoDB éphémère pour les avis — aucune
+base réelle n'est touchée.
 
 ## Build et déploiement
 
@@ -146,9 +165,10 @@ NODE_ENV=production npm start
 
 Suggestions d'hébergement gratuit/peu coûteux :
 
-- **Frontend** : Vercel ou Netlify (déploiement automatique depuis GitHub).
-- **API** : Render ou Railway (Node.js).
-- **BDD** : Aiven, Railway ou PlanetScale (MySQL managé).
+- **Frontend** : Vercel (utilisé) ou Netlify — déploiement automatique depuis GitHub.
+- **API** : Render (utilisé) ou Railway (Node.js).
+- **BDD SQL** : AlwaysData (utilisé), Aiven ou Railway (MySQL managé).
+- **BDD NoSQL** : MongoDB Atlas pour les avis (URI à fournir via `MONGODB_URI`).
 
 Variables d'environnement à définir côté plateforme (mêmes noms que `.env.example`).
 
@@ -164,6 +184,8 @@ Tous les endpoints (sauf `/health`) requièrent l'en-tête `x-api-key`.
 | GET     | `/api/artisans`                    | Liste des artisans (`?category=…&q=…`)            |
 | GET     | `/api/artisans/top-of-month`       | Les 3 artisans du mois (page d'accueil)           |
 | GET     | `/api/artisans/:id`                | Fiche complète d'un artisan                       |
+| GET     | `/api/artisans/:id/reviews`        | Avis clients de l'artisan + note moyenne (MongoDB) |
+| POST    | `/api/artisans/:id/reviews`        | Dépôt d'un avis (`authorName`, `rating`, `comment`) |
 | POST    | `/api/artisans/:id/contact`        | Envoi du formulaire de contact (`name`, `email`, `subject`, `message`) |
 
 ## Sécurité
@@ -174,7 +196,8 @@ Mesures mises en place :
   → restreint l'accès de l'API à l'application frontend.
 - **CORS allowlist** → seules les origines explicitement listées (frontend) sont autorisées.
 - **Helmet** → en-têtes HTTP de sécurité (X-Frame-Options, Referrer-Policy, etc.).
-- **Rate limiting** → 100 req / 15 min globalement, 5 req / 15 min pour le formulaire de contact.
+- **Rate limiting** → 100 req / 15 min globalement, 5 req / 15 min pour le formulaire de contact,
+  10 req / 15 min pour le dépôt d'avis.
 - **Validation `express-validator`** → nettoyage et contrôle de tous les paramètres en entrée.
 - **Sequelize (requêtes paramétrées)** → protection native contre l'injection SQL.
 - **Utilisateur BDD à privilèges réduits** → l'API n'a que les droits CRUD nécessaires.
@@ -192,7 +215,7 @@ Détails complets dans [`docs/SECURITE.md`](docs/SECURITE.md).
 - Sémantique HTML correcte (`<header>`, `<main>`, `<nav>`, `<footer>`, `<address>`, etc.).
 - Navigation au clavier complète, attributs ARIA quand nécessaire.
 - Composant `<Rating>` accessible (étoiles visuelles + valeur textuelle lue par les lecteurs d'écran).
-- Titres et meta-descriptions par page (référencement SEO via `react-helmet-async`).
+- Titres et meta-descriptions par page (référencement SEO via les métadonnées natives de React 19, composant `Seo`).
 
 ## Liens utiles
 

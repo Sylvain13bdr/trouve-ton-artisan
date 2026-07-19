@@ -46,10 +46,12 @@ sniffing MIME, leak de referrer, downgrade HTTPS → HTTP, etc.
 - Limite globale : 100 requêtes par 15 minutes et par IP (`express-rate-limit`).
 - Limite spécifique sur `POST /api/artisans/:id/contact` : 5 messages par
   15 minutes et par IP.
+- Limite spécifique sur `POST /api/artisans/:id/reviews` : 10 avis par
+  15 minutes et par IP.
 
 **Intérêt.**
-Empêche les abus du formulaire de contact (spam d'artisans) et les attaques par
-force brute sur la clé d'API.
+Empêche les abus du formulaire de contact et du dépôt d'avis (spam) et les
+attaques par force brute sur la clé d'API.
 
 ## 5. Validation et nettoyage des entrées
 

@@ -66,3 +66,33 @@ Fichier `database/02_seed.sql` :
 - 17 artisans, dont 3 marqués « artisan du mois »
 
 Données issues du fichier `data.xlsx` fourni dans le brief.
+
+## 6. Volet NoSQL — collection `reviews` (MongoDB)
+
+En complément de la base relationnelle, les **avis clients** sont stockés dans
+une base **MongoDB**, via l'ODM **Mongoose** (modèle
+`backend/src/models/Review.js`).
+
+Document type :
+
+```json
+{
+  "artisanId": 1,
+  "authorName": "Claire",
+  "rating": 5,
+  "comment": "Travail impeccable et très soigné.",
+  "reply": { "message": "…", "repliedAt": "…" },
+  "createdAt": "…",
+  "updatedAt": "…"
+}
+```
+
+- **Lien SQL ↔ NoSQL** : `artisanId` référence l'identifiant de l'artisan en
+  base relationnelle ; le service vérifie l'existence de l'artisan côté SQL
+  avant toute écriture côté MongoDB.
+- **Validation** : le schéma Mongoose contrôle types, champs obligatoires et
+  bornes (note de 1 à 5, longueurs minimales/maximales).
+- **Index** : un index sur `artisanId` accélère la lecture des avis d'un
+  artisan ; la note moyenne est calculée par une agrégation MongoDB.
+- **Résilience** : la connexion est non bloquante — sans MongoDB, l'API SQL
+  fonctionne et les routes d'avis répondent 503.

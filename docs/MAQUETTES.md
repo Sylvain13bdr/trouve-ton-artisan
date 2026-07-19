@@ -31,7 +31,9 @@ palette, typographie et adaptations responsives.
 
 ### 2.2 Typographie
 
-- **Famille** : `Graphik` (fallbacks : `Helvetica Neue`, `Arial`, sans-serif).
+- **Famille** : `Graphik`, auto-hébergée en woff2 sur le site (repli : `Inter`,
+  polices système). `Inter` a servi de substitut dans les maquettes Figma,
+  Graphik étant une police sous licence.
 - **Tailles** :
   - H1 : 32–44 px (clamp pour le responsive)
   - H2 : 24–30 px
@@ -97,11 +99,9 @@ palette, typographie et adaptations responsives.
 
 ## 5. Lien Figma
 
-> Le fichier Figma sera publié en lecture seule et le lien ajouté au
-> README, ainsi qu'au dossier PDF de rendu :
+> Le fichier Figma est publié en lecture seule :
 >
-> **URL Figma** : `https://www.figma.com/file/XXXX/trouve-ton-artisan`
-> *(à remplacer après publication)*
+> **URL Figma** : <https://www.figma.com/design/vch2TgFsEjaY9O7gjnNakX/Trouve-ton-Artisan>
 
 ## 6. Schéma d'enchaînement
 

@@ -47,8 +47,8 @@ courantes et vérifier que les bonnes pratiques sont appliquées.
 ### A06:2021 – Vulnerable and Outdated Components
 - **Risque** : dépendances vulnérables.
 - **Mesure** : `npm audit` régulier, versions récentes des packages (Express 4,
-  Sequelize 6, React 18). Veille via GitHub Dependabot recommandée sur le
-  dépôt distant.
+  Sequelize 6, Mongoose 9, React 19). Veille via GitHub Dependabot recommandée
+  sur le dépôt distant.
 
 ### A07:2021 – Identification and Authentication Failures
 - **Risque** : brute force, énumération.
