@@ -227,12 +227,13 @@ function h1(text) {
     });
 }
 
-function h2(text) {
+function h2(text, opts = {}) {
     return new Paragraph({
         heading: HeadingLevel.HEADING_2,
         spacing: { before: 240, after: 120 },
         keepNext: true,
         keepLines: true,
+        pageBreakBefore: opts.newPage === true, // « saut de page avant » Word
         children: [new TextRun({ text, bold: true })],
     });
 }
@@ -251,6 +252,7 @@ function p(text, opts = {}) {
     return new Paragraph({
         spacing: { after: 200, line: 276 }, // interligne 1,15 + paragraphes aérés
         alignment: opts.alignment || AlignmentType.JUSTIFIED,
+        keepNext: opts.keep === true, // chaîne ce paragraphe à ce qui le suit
         children: [new TextRun({ text, ...opts.run })],
     });
 }
@@ -887,16 +889,18 @@ const [stats] = await Review.aggregate([
   return { review };
 }`),
 
-    h2('3.10 Jeu d\'essai de la fonctionnalité la plus représentative'),
+    h2('3.10 Jeu d\'essai de la fonctionnalité la plus représentative', { newPage: true }),
     p(
         'La fonctionnalité retenue est le dépôt d\'un avis sur la fiche d\'un artisan, suivi de sa ' +
             'relecture. Elle a été choisie parce qu\'elle traverse toute l\'application : le formulaire ' +
             'React en front-end, la validation et la logique métier en back-end, puis les deux bases de ' +
-            'données — lecture de l\'artisan en SQL, écriture puis relecture de l\'avis en NoSQL.'
+            'données — lecture de l\'artisan en SQL, écriture puis relecture de l\'avis en NoSQL.',
+        { keep: true }
     ),
     p(
         'L\'objectif est de vérifier le parcours nominal (un avis bien enregistré et la note moyenne ' +
-            'recalculée) ainsi que la robustesse de l\'API face à deux cas limites.'
+            'recalculée) ainsi que la robustesse de l\'API face à deux cas limites.',
+        { keep: true }
     ),
     simpleTable(
         ['Cas', 'Données en entrée', 'Attendu', 'Obtenu'],
