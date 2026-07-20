@@ -81,6 +81,7 @@ function image(filename, opts = {}) {
         new Paragraph({
             alignment: AlignmentType.CENTER,
             spacing: { before: 100, after: 60 },
+            keepNext: true, // l'image reste sur la même page que sa légende
             children: [
                 new ImageRun({
                     type: 'png',
@@ -167,12 +168,43 @@ function svgImage(filename, opts = {}) {
     ];
 }
 
-// Bloc 3 résolutions empilées pour une page donnée
+// Bloc 3 résolutions : mobile et tablette côte à côte (compact, une seule
+// page avec le titre), puis la version desktop en dessous.
 function threeRes(baseSlug, label) {
+    const H = 470; // hauteur commune des deux captures côte à côte (px)
+    const mk = (file) => {
+        const dims = FIGMA_DIMS[file] || { w: 375, h: 800 };
+        return new ImageRun({
+            type: 'png',
+            data: fs.readFileSync(path.join(__dirname, 'captures', file)),
+            transformation: { width: Math.round((dims.w / dims.h) * H), height: H },
+            altText: { title: file, description: file, name: file },
+        });
+    };
     return [
-        ...image(`${baseSlug}-mobile.png`,   { maxW: 200, caption: `${label} — Mobile (375 px)` }),
-        ...image(`${baseSlug}-tablette.png`, { maxW: 360, caption: `${label} — Tablette (768 px)` }),
-        ...image(`${baseSlug}-desktop.png`,  { maxW: 540, caption: `${label} — Desktop (1280 px)` }),
+        new Paragraph({
+            alignment: AlignmentType.CENTER,
+            spacing: { before: 100, after: 60 },
+            keepNext: true,
+            children: [
+                mk(`${baseSlug}-mobile.png`),
+                new TextRun({ text: '        ' }),
+                mk(`${baseSlug}-tablette.png`),
+            ],
+        }),
+        new Paragraph({
+            alignment: AlignmentType.CENTER,
+            spacing: { after: 180 },
+            children: [
+                new TextRun({
+                    text: `${label} — Mobile (375 px) et Tablette (768 px)`,
+                    italics: true,
+                    size: 18,
+                    color: COLOR_DARK,
+                }),
+            ],
+        }),
+        ...image(`${baseSlug}-desktop.png`, { maxW: 540, caption: `${label} — Desktop (1280 px)` }),
     ];
 }
 
@@ -183,10 +215,14 @@ const COLOR_DARK = '384050';
 const COLOR_LIGHT = 'F1F8FC';
 const COLOR_BORDER = 'D0D7DE';
 
+// keepNext : un titre reste toujours sur la même page que ce qui le suit
+// (paragraphes « solidaires » de Word) — jamais de titre orphelin en bas de page.
 function h1(text) {
     return new Paragraph({
         heading: HeadingLevel.HEADING_1,
         spacing: { before: 360, after: 180 },
+        keepNext: true,
+        keepLines: true,
         children: [new TextRun({ text, bold: true })],
     });
 }
@@ -195,6 +231,8 @@ function h2(text) {
     return new Paragraph({
         heading: HeadingLevel.HEADING_2,
         spacing: { before: 240, after: 120 },
+        keepNext: true,
+        keepLines: true,
         children: [new TextRun({ text, bold: true })],
     });
 }
@@ -203,13 +241,15 @@ function h3(text) {
     return new Paragraph({
         heading: HeadingLevel.HEADING_3,
         spacing: { before: 200, after: 100 },
+        keepNext: true,
+        keepLines: true,
         children: [new TextRun({ text, bold: true })],
     });
 }
 
 function p(text, opts = {}) {
     return new Paragraph({
-        spacing: { after: 120 },
+        spacing: { after: 200, line: 276 }, // interligne 1,15 + paragraphes aérés
         alignment: opts.alignment || AlignmentType.JUSTIFIED,
         children: [new TextRun({ text, ...opts.run })],
     });
@@ -218,7 +258,7 @@ function p(text, opts = {}) {
 function bullet(text, level = 0) {
     return new Paragraph({
         numbering: { reference: 'bullets', level },
-        spacing: { after: 80 },
+        spacing: { after: 120, line: 276 },
         children: [new TextRun(text)],
     });
 }
@@ -226,7 +266,7 @@ function bullet(text, level = 0) {
 function numbered(text, level = 0) {
     return new Paragraph({
         numbering: { reference: 'numbers', level },
-        spacing: { after: 80 },
+        spacing: { after: 120, line: 276 },
         children: [new TextRun(text)],
     });
 }
@@ -272,8 +312,12 @@ function simpleTable(headers, rows, widths) {
     const border = { style: BorderStyle.SINGLE, size: 4, color: COLOR_BORDER };
     const borders = { top: border, bottom: border, left: border, right: border };
 
+    // cantSplit : une ligne ne se coupe jamais sur deux pages ; keepNext sur
+    // toutes les lignes sauf la dernière : le tableau reste entier sur une page
+    // (Word ne le scinde que s'il dépasse une page complète).
     const headerRow = new TableRow({
         tableHeader: true,
+        cantSplit: true,
         children: headers.map(
             (label, i) =>
                 new TableCell({
@@ -283,6 +327,7 @@ function simpleTable(headers, rows, widths) {
                     margins: { top: 80, bottom: 80, left: 120, right: 120 },
                     children: [
                         new Paragraph({
+                            keepNext: true,
                             children: [
                                 new TextRun({
                                     text: label,
@@ -297,15 +342,21 @@ function simpleTable(headers, rows, widths) {
     });
 
     const dataRows = rows.map(
-        (row) =>
+        (row, rIdx) =>
             new TableRow({
+                cantSplit: true,
                 children: row.map(
                     (cell, i) =>
                         new TableCell({
                             borders,
                             width: { size: widths[i], type: WidthType.DXA },
                             margins: { top: 80, bottom: 80, left: 120, right: 120 },
-                            children: [new Paragraph({ children: [new TextRun(String(cell))] })],
+                            children: [
+                                new Paragraph({
+                                    keepNext: rIdx < rows.length - 1,
+                                    children: [new TextRun(String(cell))],
+                                }),
+                            ],
                         })
                 ),
             })
